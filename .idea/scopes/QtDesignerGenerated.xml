@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="QtDesignerGenerated" pattern="file[py-np4vtt]:gui/formclasses//*" />
+</component>

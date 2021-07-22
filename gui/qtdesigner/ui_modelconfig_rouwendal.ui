@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>configRouwendalDialog</class>
+ <widget class="QDialog" name="configRouwendalDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>641</width>
+    <height>261</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Rouwendal's Method - Configuration</string>
+  </property>
+  <layout class="QVBoxLayout" name="layoutToplevel">
+   <item>
+    <layout class="QHBoxLayout" name="layoutMain">
+     <item>
+      <widget class="QGroupBox" name="groupBoxStep1">
+       <property name="title">
+        <string>Step 1: Set the VTT support points</string>
+       </property>
+       <layout class="QFormLayout" name="layoutGrpStep1">
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelPointsMinimum">
+          <property name="text">
+           <string>Minimum:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="fieldPointsMinimum">
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelPointsMaximum">
+          <property name="text">
+           <string>Maximum:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="fieldPointsMaximum">
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelPointsSupport">
+          <property name="text">
+           <string>Number of support points:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="fieldPointsSupport">
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="layoutGrpsRight">
+       <item>
+        <widget class="QGroupBox" name="groupBoxStep2">
+         <property name="title">
+          <string>Step 2: Set the starting value for MLE estimation</string>
+         </property>
+         <layout class="QVBoxLayout" name="layoutGrpStep2">
+          <item>
+           <layout class="QVBoxLayout" name="layoutProbConsistent">
+            <item>
+             <widget class="QLabel" name="labelProbConsistent">
+              <property name="text">
+               <string>Probability of consistent choice:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="layoutProbSlider">
+              <item>
+               <widget class="QLabel" name="labelProbSliderMin">
+                <property name="text">
+                 <string>0%</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="sliderProbConsistent">
+                <property name="value">
+                 <number>90</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TicksBelow</enum>
+                </property>
+                <property name="tickInterval">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="labelProbSliderMax">
+                <property name="text">
+                 <string>100%</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="spacerStep2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>31</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxAdvanced">
+         <property name="title">
+          <string>Advanced setup (optional)</string>
+         </property>
+         <layout class="QFormLayout" name="layoutGrpAdvanced">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelMaxIterations">
+            <property name="text">
+             <string>Maximum iterations for MLE:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="fieldMaxIterations">
+            <property name="text">
+             <string>10000</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="btnDialogBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>btnDialogBox</sender>
+   <signal>accepted()</signal>
+   <receiver>configRouwendalDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnDialogBox</sender>
+   <signal>rejected()</signal>
+   <receiver>configRouwendalDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
