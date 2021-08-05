@@ -13,6 +13,7 @@ from gui.mainwindow import MainWindow
 
 if __name__ == '__main__':
     app = QApplication([])
+    app.setApplicationName('Py-NP4VTT')
     win = MainWindow()
     win.show()
     sys.exit(app.exec_())

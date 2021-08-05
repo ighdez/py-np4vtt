@@ -5,9 +5,12 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+from pathlib import Path
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
+
 from gui.formclasses.ui_mainwindow import Ui_mainWindow
+from gui.import_variables import ImportVariables
+import controller
 
 
 class MainWindow(QMainWindow):
@@ -40,14 +43,20 @@ class MainWindow(QMainWindow):
     def connectSignals(self):
         self.ui.btnImportWizard.clicked.connect(self.importWizardClicked)
 
-    def importWizardClicked(self):
+    # Slots
+    @staticmethod
+    def importWizardClicked():
         openDialog = QFileDialog()
-        openDialog.setFileMode(QFileDialog.AnyFile)
-        openDialog.setNameFilter('Tab-separated values (*.txt)')
+        openDialog.setFileMode(QFileDialog.ExistingFile)
+        openDialog.setNameFilter('Tab-separated values (*.txt);; Comma-separated values (*.csv)')
 
-        # TODO: actually go to the import wizard window
-        if openDialog.exec_():
-            print(openDialog.selectedFiles())
+        openDialog.exec_()
+        files = openDialog.selectedFiles()
+
+        if files:
+            column_names = controller.openDataset(Path(files[0]))
+            import_dialog = ImportVariables(column_names)
+            import_dialog.exec_()
 
     def disableButtonsStep1(self):
         """Before loading data, all other buttons are disabled"""
