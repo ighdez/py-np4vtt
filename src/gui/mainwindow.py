@@ -6,11 +6,14 @@
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from pathlib import Path
+
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QDialog
 
 import controller
 from gui.formclasses.ui_mainwindow import Ui_mainWindow
 from gui.import_variables import ImportVariables
+from gui.modelconfig import ModelConfigLocLogit, ModelConfigLogit, ModelConfigRouwendal, ModelConfigANN
+
 from model.data_format import VarDescriptives
 
 
@@ -38,32 +41,21 @@ class MainWindow(QMainWindow):
         ]
 
         self.disableButtonsStep1()
-
         self.connectSignals()
 
     def connectSignals(self) -> None:
         self.ui.btnImportWizard.clicked.connect(self.importWizardClicked)
+
+        self.ui.btnLocalLogitConf.clicked.connect(self.handleConfigLocLogit)
+        self.ui.btnLogisticRegressionConf.clicked.connect(self.handleConfigLogit)
+        self.ui.btnRouwendalConf.clicked.connect(self.handleConfigRouwendal)
+        self.ui.btnANNConf.clicked.connect(self.handleConfigANN)
 
     def handleImportDone(self, varDescriptives: VarDescriptives) -> None:
         descText = str(varDescriptives)  # Maybe some rich text in here?
         self.ui.textDataInfo.setText(descText)
 
         self.setStateButtonsConfigure(True)
-
-    # Slots
-    def importWizardClicked(self) -> None:
-        openDialog = QFileDialog()
-        openDialog.setFileMode(QFileDialog.ExistingFile)
-        openDialog.setNameFilter('Tab-separated values (*.txt);; Comma-separated values (*.csv)')
-
-        openDialog.exec_()
-        files = openDialog.selectedFiles()
-
-        if files:
-            columnNames = controller.openDataset(Path(files[0]))
-            importDialog = ImportVariables(columnNames)
-            if importDialog.exec_() == QDialog.Accepted:
-                self.handleImportDone(importDialog.getVarDescriptives())
 
     def disableButtonsStep1(self) -> None:
         """Before loading data, all other buttons are disabled"""
@@ -86,3 +78,38 @@ class MainWindow(QMainWindow):
         """Buttons to show estimation outputs, export, etc. only should be enabled after estimation is done"""
         for btn in self.btnsOutput:
             btn.setEnabled(newState)
+
+    # Slots
+    def importWizardClicked(self) -> None:
+        openDialog = QFileDialog()
+        openDialog.setFileMode(QFileDialog.ExistingFile)
+        openDialog.setNameFilter('Tab-separated values (*.txt);; Comma-separated values (*.csv)')
+
+        openDialog.exec_()
+        files = openDialog.selectedFiles()
+
+        if files:
+            columnNames = controller.openDataset(Path(files[0]))
+            importDialog = ImportVariables(columnNames)
+            if importDialog.exec() == QDialog.Accepted:
+                self.handleImportDone(importDialog.getVarDescriptives())
+
+    @staticmethod
+    def handleConfigLocLogit() -> None:
+        dialog = ModelConfigLocLogit()
+        dialog.exec()
+
+    @staticmethod
+    def handleConfigLogit() -> None:
+        dialog = ModelConfigLogit()
+        dialog.exec()
+
+    @staticmethod
+    def handleConfigRouwendal() -> None:
+        dialog = ModelConfigRouwendal()
+        dialog.exec()
+
+    @staticmethod
+    def handleConfigANN() -> None:
+        dialog = ModelConfigANN()
+        dialog.exec()
