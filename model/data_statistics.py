@@ -5,22 +5,11 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from dataclasses import dataclass
+import pandas as pd
+
+from model.data_format import VarMapping, VarDescriptives
 
 
-@dataclass
-class VarMapping:
-    varId: str
-    varChosenAlt: str
-
-    varCost1: str
-    varTime1: str
-    varCost2: str
-    varTime2: str
-
-
-@dataclass
-class VarDescriptives:
-    def __str__(self) -> str:
-        # TODO
-        return "VarDescriptives()"
+def compute_descriptives(dataset_frame: pd.DataFrame, dataset_varmapping: VarMapping) -> VarDescriptives:
+    # TODO
+    return VarDescriptives()

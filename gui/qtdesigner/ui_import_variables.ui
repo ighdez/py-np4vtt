@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Mapping study variables to data columns</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="layoutToplevel">
    <item>
     <layout class="QHBoxLayout" name="layoutMain">
      <item>
@@ -245,14 +245,25 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="btnDialogBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="layoutBottom">
+     <item>
+      <widget class="QLabel" name="labelNotice">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="btnDialogBox">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

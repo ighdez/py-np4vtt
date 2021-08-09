@@ -5,16 +5,17 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from typing import List
+from typing import List, Optional
 from pathlib import Path
 import csv
 
 import pandas as pd
 
-from model.data_format import VarMapping
+from model.data_format import VarMapping, VarDescriptives
+from model.data_statistics import compute_descriptives
 
-
-dataset_frame_full = None
+dataset_frame: Optional[pd.DataFrame] = None
+dataset_varmapping: Optional[VarMapping] = None
 
 
 def openDataset(chosenPath: Path) -> List[str]:
@@ -30,15 +31,14 @@ def openDataset(chosenPath: Path) -> List[str]:
     data_dicts = [dict(zip(column_names, row)) for row in rows[1:]]
 
     # Make the Pandas dataframe
-    global dataset_frame_full
-    dataset_frame_full = pd.DataFrame(data_dicts)
+    global dataset_frame
+    dataset_frame = pd.DataFrame(data_dicts)
 
     return column_names
 
 
-def setVarMapping(mapping: VarMapping) -> None:
-    pass
+def importMappedDataset(mapping: VarMapping) -> VarDescriptives:
+    global dataset_varmapping
+    dataset_varmapping = mapping
 
-
-def getBasicDescriptives():
-    pass
+    return compute_descriptives(dataset_frame, dataset_varmapping)
