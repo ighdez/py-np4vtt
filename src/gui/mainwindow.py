@@ -7,6 +7,7 @@
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from pathlib import Path
 
+from PyQt5.Qt import Qt
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QDialog
 
 import controller
@@ -40,7 +41,12 @@ class MainWindow(QMainWindow):
             self.ui.btnPlot, self.ui.btnResultsExport,
         ]
 
-        self.disableButtonsStep1()
+        self.labelsStatus = [
+            self.ui.labelLocalLogitStatus, self.ui.labelLogisticRegressionStatus,
+            self.ui.labelRouwendalStatus, self.ui.labelANNStatus,
+        ]
+
+        self.disableTaskButtonsStep1()
         self.connectSignals()
 
     def connectSignals(self) -> None:
@@ -55,26 +61,41 @@ class MainWindow(QMainWindow):
         descText = str(varDescriptives)  # Maybe some rich text in here?
         self.ui.textDataInfo.setText(descText)
 
-        self.setStateButtonsConfigure(True)
+        self.setTaskButtonsConfigure(True)
+        self.setStatusLabelsConfigure()
 
-    def disableButtonsStep1(self) -> None:
+    def setStatusLabelsConfigure(self) -> None:
+        self.setStatusLabels('green', 'Configure Options')
+
+    def setStatusLabels(self, colorCSSName: str, noticeText: str) -> None:
+        richText = (
+            '<html><head></head><body><p>'
+            '<span style="color:{color};">{notice}</span>'
+            '</p></body></html>'
+        ).format(color=colorCSSName, notice=noticeText)
+
+        for label in self.labelsStatus:
+            label.setTextFormat(Qt.TextFormat.RichText)
+            label.setText(richText)
+
+    def disableTaskButtonsStep1(self) -> None:
         """Before loading data, all other buttons are disabled"""
-        self.setStateButtonsOutput(False)
-        self.setStateButtonsEstimate(False)
-        self.setStateButtonsConfigure(False)
+        self.setTaskButtonsOutput(False)
+        self.setTaskButtonsEstimate(False)
+        self.setTaskButtonsConfigure(False)
         self.ui.btnDescriptives.setEnabled(False)
 
-    def setStateButtonsConfigure(self, newState: bool) -> None:
+    def setTaskButtonsConfigure(self, newState: bool) -> None:
         """Buttons related to model configuration only should be enabled after data is loaded"""
         for btn in self.btnsConf:
             btn.setEnabled(newState)
 
-    def setStateButtonsEstimate(self, newState: bool) -> None:
+    def setTaskButtonsEstimate(self, newState: bool) -> None:
         """Buttons to perform estimation only should be enabled after a model is configured"""
         for btn in self.btnsEstimate:
             btn.setEnabled(newState)
 
-    def setStateButtonsOutput(self, newState: bool) -> None:
+    def setTaskButtonsOutput(self, newState: bool) -> None:
         """Buttons to show estimation outputs, export, etc. only should be enabled after estimation is done"""
         for btn in self.btnsOutput:
             btn.setEnabled(newState)
