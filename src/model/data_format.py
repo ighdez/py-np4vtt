@@ -20,7 +20,12 @@ class VarMapping:
 
 
 @dataclass
-class VarDescriptives:
+class StudyArrays:
+    pass
+
+
+@dataclass
+class StudyDescriptives:
     def __str__(self) -> str:
-        # TODO
-        return "VarDescriptives()"
+        # TODO Maybe some rich text in here?
+        return "StudyDescriptives()"

@@ -15,7 +15,7 @@ from gui.formclasses.ui_mainwindow import Ui_mainWindow
 from gui.import_variables import ImportVariables
 from gui.modelconfig import ModelConfigLocLogit, ModelConfigLogit, ModelConfigRouwendal, ModelConfigANN
 
-from model.data_format import VarDescriptives
+from model.data_format import StudyDescriptives
 
 
 class MainWindow(QMainWindow):
@@ -57,8 +57,8 @@ class MainWindow(QMainWindow):
         self.ui.btnRouwendalConf.clicked.connect(self.handleConfigRouwendal)
         self.ui.btnANNConf.clicked.connect(self.handleConfigANN)
 
-    def handleImportDone(self, varDescriptives: VarDescriptives) -> None:
-        descText = str(varDescriptives)  # Maybe some rich text in here?
+    def handleImportDone(self, varDescriptives: StudyDescriptives) -> None:
+        descText = str(varDescriptives)
         self.ui.textDataInfo.setText(descText)
 
         self.setTaskButtonsConfigure(True)
