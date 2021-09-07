@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QDialog, QLineEdit
 from gui.formclasses.ui_import_variables import Ui_variablesDialog
 
 import controller
-from model.data_format import VarMapping, StudyDescriptives
+from model.data_format import StudyVar, StudyVarMapping, StudyDescriptives
 
 
 class ImportVariables(QDialog):
@@ -21,7 +21,7 @@ class ImportVariables(QDialog):
         super().__init__(parent)
 
         self.column_names = column_names
-        self.varMapping: Optional[VarMapping] = None
+        self.varMapping: StudyVarMapping = {}
         self.varDescriptives: Optional[StudyDescriptives] = None
 
         self.ui = Ui_variablesDialog()
@@ -82,14 +82,14 @@ class ImportVariables(QDialog):
 
             # All fields must be filled for this dialog to actually be accepted
             if nameVarId and nameVarChosenAlt and nameVarCost1 and nameVarTime1 and nameVarCost2 and nameVarTime2:
-                self.varMapping = VarMapping(
-                    varId=nameVarId,
-                    varChosenAlt=nameVarChosenAlt,
-                    varCost1=nameVarCost1,
-                    varTime1=nameVarTime1,
-                    varCost2=nameVarCost2,
-                    varTime2=nameVarTime2,
-                )
+                self.varMapping = {
+                    StudyVar.Id: nameVarId,
+                    StudyVar.ChosenAlt: nameVarChosenAlt,
+                    StudyVar.Cost1: nameVarCost1,
+                    StudyVar.Time1: nameVarTime1,
+                    StudyVar.Cost2: nameVarCost2,
+                    StudyVar.Time2: nameVarTime2,
+                }
 
                 self.varDescriptives = controller.importMappedDataset(self.varMapping)
 

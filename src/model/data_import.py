@@ -7,17 +7,30 @@
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import pandas as pd
 
-from model.data_format import VarMapping, StudyDescriptives, StudyArrays
+from model.data_format import StudyVar, StudyVarMapping, StudyDescriptives, StudyArrays
 
 
-def validate_dataset(dataset_frame: pd.DataFrame, dataset_varmapping: VarMapping) -> StudyArrays:
-    varID = dataset_frame.get(dataset_varmapping.varId)
-    varChoice = dataset_frame.get(dataset_varmapping.varChosenAlt)
+class VarMappingException(Exception):
+    def __init__(self, missingVar: StudyVar, colName: str):
+        self.missingVar = missingVar
+        self.colName = colName
 
-    varCost1 = dataset_frame.get(dataset_varmapping.varCost1)
-    varCost2 = dataset_frame.get(dataset_varmapping.varCost2)
-    varTime1 = dataset_frame.get(dataset_varmapping.varTime1)
-    varTime2 = dataset_frame.get(dataset_varmapping.varTime2)
+    def __str__(self):
+        return f"The study variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
+
+
+def make_studyarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> StudyArrays:
+    study_arrays = {}
+
+    for v in StudyVar:
+        colName = dataset_varmapping[v]
+        arr = dataset_frame.get(colName)
+        if arr is None:
+            raise VarMappingException(v, colName)
+        else:
+            study_arrays[v] = arr
+
+    return study_arrays
 
 def compute_descriptives(arrays_study: StudyArrays) -> StudyDescriptives:
     # Reshape and re-header DataFrame to contain only mapped columns
