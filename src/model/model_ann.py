@@ -17,3 +17,6 @@ class ConfigANN:
     shufflesPerRepeat: int
 
     seed: Optional[int]
+
+    def validate(self):
+        pass

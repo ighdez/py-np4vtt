@@ -18,3 +18,6 @@ class ConfigLogit:
     mleMaxIterations: int
 
     seed: Optional[int]
+
+    def validate(self):
+        pass

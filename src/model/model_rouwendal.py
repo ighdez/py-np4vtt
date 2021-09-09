@@ -13,3 +13,6 @@ class ConfigRouwendal:
     minimum: float
     maximum: float
     supportPoints: int
+
+    def validate(self):
+        pass
