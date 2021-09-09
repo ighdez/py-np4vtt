@@ -53,3 +53,17 @@ def importMappedDataset(mapping: StudyVarMapping) -> StudyDescriptives:
     study_arrays = make_studyarrays(dataset_frame, dataset_varmapping)
 
     return compute_descriptives(study_arrays)
+
+
+def modelConfig_loclogit():
+    pass
+
+def modelConfig_rouwendal():
+    pass
+
+def modelConfig_logit():
+    pass
+
+def modelConfig_ann():
+    pass
+
