@@ -20,4 +20,33 @@ class ConfigLogit:
     seed: Optional[int]
 
     def validate(self):
-        pass
+
+        # Create errormessage list
+        errorMessage = []
+
+        # Scale starting value must be positive.
+        isPositiveScale = (self.mleScale > 0)
+
+        if not isPositiveScale:
+            errorMessage.append('Scale starting value must be positive.')
+
+        # Max iterations must be greater than zero
+        isPositiveMaxIter = (self.mleMaxIterations > 0)
+
+        if not isPositiveMaxIter:
+            errorMessage.append('Max iterations must be greater than zero.')
+
+        # Seed must be non-negative
+        isNonNegativeSeed = (self.seed >= 0)
+
+        if not isNonNegativeSeed:
+            errorMessage.append('Seed must be non-negative.')
+
+        # Create integrity check list
+        integrityCheckList = [isPositiveScale,isPositiveMaxIter,isNonNegativeSeed]
+
+        # Test if all statements are true
+        integrityCheck = all(integrityCheckList)
+
+        # Return True if all OK, otherwise return False and a message.
+        return(integrityCheck, errorMessage)
