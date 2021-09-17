@@ -6,8 +6,9 @@
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import pandas as pd
+import numpy as np
 
-from model.data_format import StudyVar, StudyVarMapping, StudyDescriptives, StudyArrays
+from model.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic, ModelArrays
 
 
 class VarMappingException(Exception):
@@ -19,7 +20,7 @@ class VarMappingException(Exception):
         return f"The study variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
 
 
-def make_studyarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> StudyArrays:
+def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> ModelArrays:
     study_arrays = {}
 
     for v in StudyVar:
@@ -30,10 +31,50 @@ def make_studyarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
         else:
             study_arrays[v] = arr
 
-    return study_arrays
+    id_all = study_arrays[StudyVar.Id]
+    id_uniq = pd.unique(id_all)
+    npar = id_uniq.size
+    t = id_all.size / id_uniq.size
 
-def compute_descriptives(arrays_study: StudyArrays) -> StudyDescriptives:
-    # Reshape and re-header DataFrame to contain only mapped columns
+    cost1 = study_arrays[StudyVar.Cost1]
+    cost2 = study_arrays[StudyVar.Cost2]
+    cheap_alt = pd.Series(np.zeros(study_arrays[StudyVar.Cost1].size))
+    cheap_alt.loc[cost1 < cost2] = 1
+    cheap_alt.loc[cost2 < cost1] = 2
+
+def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
+    """
+        chosen_BVTT = app.arrays.Choice .* app.arrays.BVTT;
+        chosen_FnEx = sum(app.arrays.Choice,2);
+        nt_CheapnSl = sum(chosen_FnEx==0);
+        nt_FastnExp = sum(chosen_FnEx==app.arrays.T);
+
+        textline1 = ['No. individuals: ',' ',num2str(app.arrays.NP)];
+        textline2 = ['Sets per indiv.: ',' ',num2str(app.arrays.T)];
+
+        textline3 = 'Number of non-traders:';
+        textline4 = ['Fast-exp. alt.: ','  ',num2str(nt_FastnExp)];
+        textline5 = ['Slow-cheap alt.: ',' ',num2str(nt_CheapnSl)];
+
+        textline6 = 'BVTT statistics:';
+        textline7 = ['Mean chosen BVTT:',' ',num2str(mean(chosen_BVTT(:)))];
+        textline8 = ['Minimum of BVTT:','  ',num2str(min(app.arrays.BVTT(:)))];
+        textline9 = ['Maximum of BVTT:','  ',num2str(max(app.arrays.BVTT(:)))];
+
+        dataset_info = {'Dataset information:';...
+                        '';...
+                        textline1;...
+                        textline2;...
+                        ' ';...
+                        textline3;...
+                        textline4;...
+                        textline5;...
+                        ' ';...
+                        textline6;...
+                        textline7;...
+                        textline8;...
+                        textline9};
+    """
 
     # TODO
-    return StudyDescriptives()
+    return DescriptiveStatsBasic()

@@ -15,7 +15,7 @@ from gui.formclasses.ui_mainwindow import Ui_mainWindow
 from gui.import_variables import ImportVariables
 from gui.modelconfig import ModelConfigLocLogit, ModelConfigLogit, ModelConfigRouwendal, ModelConfigANN
 
-from model.data_format import StudyDescriptives
+from model.data_format import DescriptiveStatsBasic
 
 
 class MainWindow(QMainWindow):
@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
         self.ui.btnRouwendalConf.clicked.connect(self.handleConfigRouwendal)
         self.ui.btnANNConf.clicked.connect(self.handleConfigANN)
 
-    def handleImportDone(self, varDescriptives: StudyDescriptives) -> None:
+    def handleImportDone(self, varDescriptives: DescriptiveStatsBasic) -> None:
         descText = str(varDescriptives)
         self.ui.textDataInfo.setText(descText)
 

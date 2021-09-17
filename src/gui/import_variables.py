@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QDialog, QLineEdit
 from gui.formclasses.ui_import_variables import Ui_variablesDialog
 
 import controller
-from model.data_format import StudyVar, StudyVarMapping, StudyDescriptives
+from model.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic
 
 
 class ImportVariables(QDialog):
@@ -22,7 +22,7 @@ class ImportVariables(QDialog):
 
         self.column_names = column_names
         self.varMapping: StudyVarMapping = {}
-        self.varDescriptives: Optional[StudyDescriptives] = None
+        self.varDescriptives: Optional[DescriptiveStatsBasic] = None
 
         self.ui = Ui_variablesDialog()
         self.ui.setupUi(self)
@@ -59,7 +59,7 @@ class ImportVariables(QDialog):
     def setNoticeIncompleteMapping(self) -> None:
         self.setNoticeWithColor('red', 'Some study variables are not yet mapped to a dataset column')
 
-    def getVarDescriptives(self) -> StudyDescriptives:
+    def getVarDescriptives(self) -> DescriptiveStatsBasic:
         return self.varDescriptives
 
     def fillColumnNames(self) -> None:

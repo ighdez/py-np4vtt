@@ -16,14 +16,14 @@ import csv
 
 import pandas as pd
 
-from model.data_format import StudyVarMapping, StudyDescriptives, StudyArrays
+from model.data_format import StudyVarMapping, DescriptiveStatsBasic, StudiedArrays
 from model.data_import import make_studyarrays, compute_descriptives
 
 
 dataset_frame: Optional[pd.DataFrame] = None
 dataset_varmapping: StudyVarMapping = {}
 
-study_arrays: Optional[StudyArrays] = None
+study_arrays: Optional[StudiedArrays] = None
 
 
 def openDataset(chosenPath: Path) -> List[str]:
@@ -45,7 +45,7 @@ def openDataset(chosenPath: Path) -> List[str]:
     return column_names
 
 
-def importMappedDataset(mapping: StudyVarMapping) -> StudyDescriptives:
+def importMappedDataset(mapping: StudyVarMapping) -> DescriptiveStatsBasic:
     global dataset_varmapping
     dataset_varmapping = mapping
 

@@ -5,7 +5,7 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from enum import Enum
+from enum import Enum, auto
 
 import pandas as pd
 
@@ -13,24 +13,32 @@ from dataclasses import dataclass
 from typing import Dict
 
 
-STUDYVARNAMES = [
-    'Id',
-    'ChosenAlt',
-    'Cost1',
-    'Time1',
-    'Cost2',
-    'Time2',
-]
+class StudyVar(Enum):
+    Id = auto()
+    ChosenAlt = auto()
+    Cost1 = auto()
+    Time1 = auto()
+    Cost2 = auto()
+    Time2 = auto()
 
-StudyVar = Enum('StudyVar', STUDYVARNAMES)
 
 StudyVarMapping = Dict[StudyVar, str]
 
-StudyArrays = Dict[StudyVar, pd.Series]
+StudiedArrays = Dict[StudyVar, pd.Series]
 
 
 @dataclass
-class StudyDescriptives:
+class ModelArrays:
+    BVTT: pd.Series[float]
+    Choice: pd.Series[int]
+    Accepts: pd.Series
+    ID: pd.Series[int]  # Unique participant IDs
+    NP: int  # Number of participants
+    T: int  # Number of choice situations per participant
+
+
+@dataclass
+class DescriptiveStatsBasic:
     def __str__(self) -> str:
         # TODO Maybe some rich text in here?
         return "StudyDescriptives()"
