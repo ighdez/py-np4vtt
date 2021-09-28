@@ -5,10 +5,12 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from typing import List, Tuple
+
 import pandas as pd
 import numpy as np
 
-from model.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic, ModelArrays
+from model.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic, ModelArrays, StudiedArrays
 
 
 class VarMappingException(Exception):
@@ -20,8 +22,8 @@ class VarMappingException(Exception):
         return f"The study variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
 
 
-def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> ModelArrays:
-    study_arrays = {}
+def make_studiedarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> StudiedArrays:
+    studied_arrays = {}
 
     for v in StudyVar:
         colName = dataset_varmapping[v]
@@ -29,18 +31,73 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
         if arr is None:
             raise VarMappingException(v, colName)
         else:
-            study_arrays[v] = arr
+            studied_arrays[v] = arr
+
+    return studied_arrays
+
+
+def validate_modeldata(id_all, t, cost1, cost2, slow_alt, cheap_alt, choice) -> Tuple[bool, List[str]]:
+    integrityCheck = True
+    errorMessages = []
+
+    # TODO: Here comes the validation
+
+    return integrityCheck, errorMessages
+
+
+def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> ModelArrays:
+    study_arrays = make_studiedarrays(dataset_frame, dataset_varmapping)
 
     id_all = study_arrays[StudyVar.Id]
     id_uniq = pd.unique(id_all)
     npar = id_uniq.size
     t = id_all.size / id_uniq.size
 
-    cost1 = study_arrays[StudyVar.Cost1]
-    cost2 = study_arrays[StudyVar.Cost2]
-    cheap_alt = pd.Series(np.zeros(study_arrays[StudyVar.Cost1].size))
-    cheap_alt.loc[cost1 < cost2] = 1
-    cheap_alt.loc[cost2 < cost1] = 2
+    # Copy to avoid changing the original data imported
+    cost1 = study_arrays[StudyVar.Cost1].to_numpy(copy=True)
+    cost2 = study_arrays[StudyVar.Cost2].to_numpy(copy=True)
+    time1 = study_arrays[StudyVar.Time1].to_numpy(copy=True)
+    time2 = study_arrays[StudyVar.Time2].to_numpy(copy=True)
+    choice = study_arrays[StudyVar.ChosenAlt].to_numpy(copy=True)
+
+    # Identify the cheap alternative
+    cheap_alt = np.zeros(study_arrays[StudyVar.Cost1].size, dtype=int)
+    cheap_alt[cost1 < cost2] = 1
+    cheap_alt[cost1 > cost1] = 2
+
+    # Identify the slow alternative
+    slow_alt = np.zeros(study_arrays[StudyVar.Time1].size, dtype=int)
+    slow_alt[time1 > time2] = 1
+    slow_alt[time1 < time2] = 2
+
+    integrityCheck, errorMessages = validate_modeldata(id_all, t, cost1, cost2, slow_alt, cheap_alt, choice)
+
+    # Reshape cost and time matrices, each row contains the entries for ONE participant
+    cost1 = np.reshape(cost1, (npar, t), order='C')
+    cost2 = np.reshape(cost2, (npar, t), order='C')
+    time1 = np.reshape(time1, (npar, t), order='C')
+    time2 = np.reshape(time2, (npar, t), order='C')
+
+    # Create BVTT matrix (floating point)
+    dtime = np.abs(time2 - time1)
+    dcost = np.abs(cost2 - cost1)
+    bvtt = dcost / dtime
+
+    # FBE = "Fast But Expensive"
+    fbe_chosen = choice != cheap_alt
+    fbe_chosen = np.reshape(fbe_chosen, (npar, t), order='C')
+
+    # The number of times a DM accepted the 'FBE' alt. Sum accross columns
+    accepts = np.sum(fbe_chosen.astype(int), 1)
+
+    return ModelArrays(
+        BVTT=bvtt,
+        Choice=fbe_chosen,
+        Accepts=accepts,
+        ID=id_uniq,
+        NP=npar,
+        T=t,
+    )
 
 def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
     """

@@ -21,25 +21,25 @@ class ConfigANN:
     def validate(self):
 
         # Create errormessage list
-        errorMessage = []
+        errorMessages = []
 
         # Number of hidden nodes must be positive
         isHiddenLayersPositive = (self.hiddenLayerNodes > 0)
 
         if not isHiddenLayersPositive:
-            errorMessage.append('Number of hidden nodes must be positive.')
+            errorMessages.append('Number of hidden nodes must be positive.')
 
         # Number of repeats must be positive
         isPositiveRepeats = (self.isPositiveRepeats > 0)
 
         if not isPositiveRepeats:
-            errorMessage.append('Number of repeats must be positive.')
+            errorMessages.append('Number of repeats must be positive.')
 
         # Number of shuffles per repeats must be positive
         isPositiveShuffles = (self.isPositiveShuffles > 0)
 
         if not isPositiveShuffles:
-            errorMessage.append('Number of shuffles per repeats must be positive.')
+            errorMessages.append('Number of shuffles per repeats must be positive.')
 
         # Create integrity check list
         integrityCheckList = [isHiddenLayersPositive,isPositiveRepeats,isPositiveShuffles]
@@ -48,4 +48,4 @@ class ConfigANN:
         integrityCheck = all(integrityCheckList)
 
         # Return True if all OK, otherwise return False and a message.
-        return(integrityCheck, errorMessage)
+        return integrityCheck, errorMessages

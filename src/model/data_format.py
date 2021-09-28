@@ -8,6 +8,8 @@
 from enum import Enum, auto
 
 import pandas as pd
+import numpy as np
+import numpy.typing as npt
 
 from dataclasses import dataclass
 from typing import Dict
@@ -29,10 +31,10 @@ StudiedArrays = Dict[StudyVar, pd.Series]
 
 @dataclass
 class ModelArrays:
-    BVTT: pd.Series[float]
-    Choice: pd.Series[int]
-    Accepts: pd.Series
-    ID: pd.Series[int]  # Unique participant IDs
+    BVTT: npt.NDArray[np.float64]  # pd.Series[float]
+    Choice: npt.NDArray[np.bool_]
+    Accepts: npt.NDArray[np.int_]
+    ID: npt.NDArray[np.int_]  # Unique participant IDs
     NP: int  # Number of participants
     T: int  # Number of choice situations per participant
 
