@@ -15,27 +15,14 @@ class ConfigRouwendal:
     supportPoints: int
 
     def validate(self):
-        
         # Create errormessage list
-        errorMessages = []
+        errorList = []
 
-        # Max must be greater than minimum
-        isMaxGreaterThanMin = (self.maximum > self.minimum)
+        if not self.maximum > self.minimum:
+            errorList.append('Max must be greater than minimum.')
 
-        if not isMaxGreaterThanMin:
-            errorMessages.append('Max must be greater than minimum.')
+        if not self.supportPoints > 0:
+            errorList.append('No. of support points must be greater than zero.')
 
-        # No. of support points must be greater than zero
-        isPositiveSuppPoints = (self.supportPoints > 0)
-
-        if not isPositiveSuppPoints:
-            errorMessages.append('No. of support points must be greater than zero.')
-
-        # Create integrity check list
-        integrityCheckList = [isMaxGreaterThanMin,isPositiveSuppPoints]
-
-        # Test if all statements are true
-        integrityCheck = all(integrityCheckList)
-
-        # Return True if all OK, otherwise return False and a message.
-        return integrityCheck, errorMessages
+        # Whoever calls this validator knows that empty errorList means validator success
+        return errorList

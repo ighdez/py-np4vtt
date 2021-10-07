@@ -19,33 +19,14 @@ class ConfigANN:
     seed: Optional[int]
 
     def validate(self):
-
         # Create errormessage list
-        errorMessages = []
+        errorList = []
 
-        # Number of hidden nodes must be positive
-        isHiddenLayersPositive = (self.hiddenLayerNodes > 0)
+        if not self.trainingRepeats > 0:
+            errorList.append('Number of repeats must be positive.')
 
-        if not isHiddenLayersPositive:
-            errorMessages.append('Number of hidden nodes must be positive.')
+        if not self.shufflesPerRepeat > 0:
+            errorList.append('Number of shuffles per repeats must be positive.')
 
-        # Number of repeats must be positive
-        isPositiveRepeats = (self.isPositiveRepeats > 0)
-
-        if not isPositiveRepeats:
-            errorMessages.append('Number of repeats must be positive.')
-
-        # Number of shuffles per repeats must be positive
-        isPositiveShuffles = (self.isPositiveShuffles > 0)
-
-        if not isPositiveShuffles:
-            errorMessages.append('Number of shuffles per repeats must be positive.')
-
-        # Create integrity check list
-        integrityCheckList = [isHiddenLayersPositive,isPositiveRepeats,isPositiveShuffles]
-
-        # Test if all statements are true
-        integrityCheck = all(integrityCheckList)
-
-        # Return True if all OK, otherwise return False and a message.
-        return integrityCheck, errorMessages
+        # Whoever calls this validator knows that empty errorList means validator success
+        return errorList
