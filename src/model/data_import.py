@@ -5,6 +5,7 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import math
 from typing import List, Tuple
 
 import pandas as pd
@@ -48,11 +49,6 @@ def validate_modeldata(id_all, t, cost1, cost2, slow_alt, cheap_alt, choice) -> 
 def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> ModelArrays:
     study_arrays = make_studiedarrays(dataset_frame, dataset_varmapping)
 
-    id_all = study_arrays[StudyVar.Id]
-    id_uniq = pd.unique(id_all)
-    npar = id_uniq.size
-    t = id_all.size / id_uniq.size
-
     # Copy to avoid changing the original data imported
     cost1 = study_arrays[StudyVar.Cost1].to_numpy(copy=True)
     cost2 = study_arrays[StudyVar.Cost2].to_numpy(copy=True)
@@ -70,13 +66,20 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
     slow_alt[time1 > time2] = 1
     slow_alt[time1 < time2] = 2
 
+    id_all = study_arrays[StudyVar.Id]
+    id_uniq = pd.unique(id_all)
+    npar = id_uniq.size
+    t = id_all.size / id_uniq.size
+
     integrityCheck, errorMessages = validate_modeldata(id_all, t, cost1, cost2, slow_alt, cheap_alt, choice)
 
+    t_int = math.floor(t)
+
     # Reshape cost and time matrices, each row contains the entries for ONE participant
-    cost1 = np.reshape(cost1, (npar, t), order='C')
-    cost2 = np.reshape(cost2, (npar, t), order='C')
-    time1 = np.reshape(time1, (npar, t), order='C')
-    time2 = np.reshape(time2, (npar, t), order='C')
+    cost1 = np.reshape(cost1, (npar, t_int), order='C')
+    cost2 = np.reshape(cost2, (npar, t_int), order='C')
+    time1 = np.reshape(time1, (npar, t_int), order='C')
+    time2 = np.reshape(time2, (npar, t_int), order='C')
 
     # Create BVTT matrix (floating point)
     dtime = np.abs(time2 - time1)
@@ -85,7 +88,7 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
 
     # FBE = "Fast But Expensive"
     fbe_chosen = choice != cheap_alt
-    fbe_chosen = np.reshape(fbe_chosen, (npar, t), order='C')
+    fbe_chosen = np.reshape(fbe_chosen, (npar, t_int), order='C')
 
     # The number of times a DM accepted the 'FBE' alt. Sum accross columns
     accepts = np.sum(fbe_chosen.astype(int), 1)
@@ -96,42 +99,27 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
         Accepts=accepts,
         ID=id_uniq,
         NP=npar,
-        T=t,
+        T=t_int,
     )
 
+
 def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
-    """
-        chosen_BVTT = app.arrays.Choice .* app.arrays.BVTT;
-        chosen_FnEx = sum(app.arrays.Choice,2);
-        nt_CheapnSl = sum(chosen_FnEx==0);
-        nt_FastnExp = sum(chosen_FnEx==app.arrays.T);
+    fbe_units = arrs.Choice.astype(int)
 
-        textline1 = ['No. individuals: ',' ',num2str(app.arrays.NP)];
-        textline2 = ['Sets per indiv.: ',' ',num2str(app.arrays.T)];
+    chosenBVTT = fbe_units * arrs.BVTT
+    # noinspection PyTypeChecker
+    chosenBVTT_mean: int = np.mean(chosenBVTT)
 
-        textline3 = 'Number of non-traders:';
-        textline4 = ['Fast-exp. alt.: ','  ',num2str(nt_FastnExp)];
-        textline5 = ['Slow-cheap alt.: ',' ',num2str(nt_CheapnSl)];
+    chosen_fastexp = np.sum(fbe_units, 1)
+    nt_cheapslow = np.count_nonzero(chosen_fastexp == 0)
+    nt_fastext = np.count_nonzero(chosen_fastexp == arrs.T)
 
-        textline6 = 'BVTT statistics:';
-        textline7 = ['Mean chosen BVTT:',' ',num2str(mean(chosen_BVTT(:)))];
-        textline8 = ['Minimum of BVTT:','  ',num2str(min(app.arrays.BVTT(:)))];
-        textline9 = ['Maximum of BVTT:','  ',num2str(max(app.arrays.BVTT(:)))];
-
-        dataset_info = {'Dataset information:';...
-                        '';...
-                        textline1;...
-                        textline2;...
-                        ' ';...
-                        textline3;...
-                        textline4;...
-                        textline5;...
-                        ' ';...
-                        textline6;...
-                        textline7;...
-                        textline8;...
-                        textline9};
-    """
-
-    # TODO
-    return DescriptiveStatsBasic()
+    return DescriptiveStatsBasic(
+        NP=arrs.NP,
+        T=arrs.T,
+        NT_FastExp=nt_fastext,
+        NT_CheapSlow=nt_cheapslow,
+        ChosenBVTT_Mean=chosenBVTT_mean,
+        BVTT_min=np.amin(arrs.BVTT),
+        BVTT_max=np.amax(arrs.BVTT),
+    )

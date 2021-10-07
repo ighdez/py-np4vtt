@@ -6,13 +6,13 @@
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from enum import Enum, auto
+from dataclasses import dataclass
+from typing import Dict
+from inspect import cleandoc
 
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
-
-from dataclasses import dataclass
-from typing import Dict
 
 
 class StudyVar(Enum):
@@ -41,6 +41,27 @@ class ModelArrays:
 
 @dataclass
 class DescriptiveStatsBasic:
+    NP: int  # Number of participants
+    T: int  # Number of choice situations per participant
+    NT_FastExp: int  # Number of non-traders (fast-expensive alt.)
+    NT_CheapSlow: int  # Number of non-traders (cheap-slow alt.)
+    ChosenBVTT_Mean: float  # Mean chosen BVTT
+    BVTT_min: float  # Minimum of BVTT
+    BVTT_max: float  # Maximum of BVTT
+
     def __str__(self) -> str:
-        # TODO Maybe some rich text in here?
-        return "StudyDescriptives()"
+        formatted_descriptives = cleandoc(f"""
+            No. individuals: {self.NP}
+            Sets per indiv.: {self.T}
+
+            Number of non-traders:
+            Fast-exp. alt.: {self.NT_FastExp}
+            Slow-cheap alt.: {self.NT_CheapSlow}
+
+            BVTT statistics:
+            Mean chosen BVTT: {self.ChosenBVTT_Mean}
+            Minimum of BVTT: {self.BVTT_min}
+            Maximum of BVTT: {self.BVTT_max}
+        """)
+
+        return formatted_descriptives

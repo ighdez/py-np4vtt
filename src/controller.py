@@ -16,14 +16,14 @@ import csv
 
 import pandas as pd
 
-from model.data_format import StudyVarMapping, DescriptiveStatsBasic, StudiedArrays
-from model.data_import import make_studyarrays, compute_descriptives
+from model.data_format import StudyVarMapping, DescriptiveStatsBasic, StudiedArrays, ModelArrays
+from model.data_import import make_modelarrays, compute_descriptives
 
 
 dataset_frame: Optional[pd.DataFrame] = None
 dataset_varmapping: StudyVarMapping = {}
 
-study_arrays: Optional[StudiedArrays] = None
+model_arrays: Optional[ModelArrays] = None
 
 
 def openDataset(chosenPath: Path) -> List[str]:
@@ -49,10 +49,10 @@ def importMappedDataset(mapping: StudyVarMapping) -> DescriptiveStatsBasic:
     global dataset_varmapping
     dataset_varmapping = mapping
 
-    global study_arrays
-    study_arrays = make_studyarrays(dataset_frame, dataset_varmapping)
+    global model_arrays
+    model_arrays = make_modelarrays(dataset_frame, dataset_varmapping)
 
-    return compute_descriptives(study_arrays)
+    return compute_descriptives(model_arrays)
 
 
 def modelConfig_loclogit():
