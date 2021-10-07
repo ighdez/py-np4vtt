@@ -83,7 +83,7 @@ def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_al
         errorMessages.append('At least one choice situation have either a cheap-fast or expensive-slow alternative.')
 
     # Choice variable must be either 1 or 2
-    choiceOneOrTwo = (choice == 1 | choice == 2)
+    choiceOneOrTwo = np.logical_or((choice == 1), (choice == 2)).all()
 
     if not choiceOneOrTwo:
         errorMessages.append('Chosen alternative variable must be either 1 or 2.')

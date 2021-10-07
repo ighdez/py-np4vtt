@@ -36,7 +36,8 @@ def openDataset(chosenPath: Path) -> List[str]:
 
     # We assume the data file has a header on first line
     column_names = rows[0]
-    data_dicts = [dict(zip(column_names, row)) for row in rows[1:]]
+    rows_numeric = [map(int, row) for row in rows[1:]]
+    data_dicts = [dict(zip(column_names, row)) for row in rows_numeric]
 
     # Make the Pandas dataframe
     global dataset_frame
