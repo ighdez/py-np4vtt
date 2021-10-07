@@ -37,12 +37,73 @@ def make_studiedarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVar
     return studied_arrays
 
 
-def validate_modeldata(id_all, t, cost1, cost2, slow_alt, cheap_alt, choice) -> Tuple[bool, List[str]]:
-    integrityCheck = True
+def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_alt, choice) -> Tuple[bool, List[str]]:
+
+    # Create errormessage list
     errorMessages = []
 
-    # TODO: Here comes the validation
+    # id_all values must be finite.
+    idIsFinite = np.isfinite(id_all).all()
 
+    if not idIsFinite:
+        errorMessages.append('There are either NAs or (minus) infinite values in ID Variable')
+
+    # T must be integer
+    tIsInteger = (int(t) == t)
+
+    if not tIsInteger:
+        errorMessages.append('Number of choice situations must be equal for all individuals.')
+
+    # Costs must be finite
+    cost1IsFinite = np.isfinite(cost1).all()
+
+    if not cost1IsFinite:
+        errorMessages.append('There are either NAs or (minus) infinite values in Cost of alternative 1.')
+
+    cost2IsFinite = np.isfinite(cost2).all()
+
+    if not cost2IsFinite:
+        errorMessages.append('There are either NAs or (minus) infinite values in Cost of alternative 2.')
+
+    # Time must be finite
+    time1IsFinite = np.isfinite(time1).all()
+
+    if not time1IsFinite:
+        errorMessages.append('There are either NAs or (minus) infinite values in Time of alternative 1.')
+
+    time2IsFinite = np.isfinite(time2).all()
+
+    if not time2IsFinite:
+        errorMessages.append('There are either NAs or (minus) infinite values in Time of alternative 2.')
+
+    # Cheap and fast cannot be the same alternative
+    nonDominantAlt = (cheap_alt == slow_alt).all()
+
+    if not nonDominantAlt:
+        errorMessages.append('At least one choice situation have either a cheap-fast or expensive-slow alternative.')
+
+    # Choice variable must be either 1 or 2
+    choiceOneOrTwo = (choice == 1 | choice == 2)
+
+    if not choiceOneOrTwo:
+        errorMessages.append('Chosen alternative variable must be either 1 or 2.')
+
+    # Compile all integrity checks in one list
+    integrityCheckList = [
+        idIsFinite,
+        tIsInteger,
+        cost1IsFinite,
+        cost2IsFinite,
+        time1IsFinite,
+        time2IsFinite,
+        nonDominantAlt,
+        choiceOneOrTwo
+    ]
+
+    # Test if all statements are true
+    integrityCheck = all(integrityCheckList)
+
+    # Return True if all OK, otherwise return False and a message.
     return integrityCheck, errorMessages
 
 
