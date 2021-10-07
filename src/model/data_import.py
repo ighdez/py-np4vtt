@@ -132,7 +132,7 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
     npar = id_uniq.size
     t = id_all.size / id_uniq.size
 
-    integrityCheck, errorMessages = validate_modeldata(id_all, t, cost1, cost2, slow_alt, cheap_alt, choice)
+    integrityCheck, errorMessages = validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_alt, choice)
 
     t_int = math.floor(t)
 
