@@ -34,3 +34,11 @@ class ConfigLogit:
 
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
+
+
+class ModelLogit:
+    def __init__(self, params: ConfigLogit):
+        pass
+
+    def run(self):
+        pass

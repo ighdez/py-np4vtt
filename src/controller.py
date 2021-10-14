@@ -16,7 +16,7 @@ import csv
 
 import pandas as pd
 
-from model.data_format import StudyVarMapping, DescriptiveStatsBasic, StudiedArrays, ModelArrays
+from model.data_format import StudyVarMapping, DescriptiveStatsBasic, ModelArrays
 from model.data_import import make_modelarrays, compute_descriptives
 
 
@@ -56,15 +56,15 @@ def importMappedDataset(mapping: StudyVarMapping) -> DescriptiveStatsBasic:
     return compute_descriptives(model_arrays)
 
 
-def modelConfig_loclogit():
+def modelConfig_loclogit(minimum: float, maximum: float, numPoints: int):
     pass
 
-def modelConfig_rouwendal():
+def modelConfig_logit(intercept: float, parameter: float, scale: float, iterations: int, seed: int):
     pass
 
-def modelConfig_logit():
+def modelConfig_rouwendal(minimum: float, maximum: float, numPoints: int, probConsistent: float, maxIterations: int):
     pass
 
-def modelConfig_ann():
+def modelConfig_ann(hiddenLayers: List[int], numRepeats: int, numShuffles: int, seed: int):
     pass
 
