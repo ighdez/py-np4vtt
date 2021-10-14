@@ -68,6 +68,12 @@ class ImportVariables(QDialog):
     # Slots
     def setVarField(self, fieldWidget: QLineEdit) -> None:
         selectedItem = self.ui.listColumns.takeItem(self.ui.listColumns.currentRow())
+
+        # Insert at the end, we don't know exactly where it should go
+        currentText = fieldWidget.text()
+        if currentText:
+            self.ui.listColumns.addItem(currentText)
+
         fieldWidget.setText(selectedItem.text())
 
     # override in QDialog
