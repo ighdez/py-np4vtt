@@ -82,7 +82,7 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
     # Identify the cheap alternative
     cheap_alt = np.zeros(study_arrays[StudyVar.Cost1].size, dtype=int)
     cheap_alt[cost1 < cost2] = 1
-    cheap_alt[cost1 > cost1] = 2
+    cheap_alt[cost1 > cost2] = 2
 
     # Identify the slow alternative
     slow_alt = np.zeros(study_arrays[StudyVar.Time1].size, dtype=int)
