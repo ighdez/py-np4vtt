@@ -8,6 +8,12 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from model.data_format import ModelArrays
+
+from scipy.optimize import minimize
+
+import numpy as np
+
 
 @dataclass
 class ConfigLogit:
@@ -37,8 +43,59 @@ class ConfigLogit:
 
 
 class ModelLogit:
-    def __init__(self, params: ConfigLogit):
-        pass
+    def __init__(self, params: ConfigLogit, arrays: ModelArrays):
+        self.params = params
+        self.arrays = arrays
 
     def run(self):
-        pass
+
+        # Define seed
+        if self.params.seed:
+            np.random.seed(self.params.seed)
+
+        # Prepare data
+        i_obs_y = np.tile(np.random.randint(1,self.arrays.T,size=(self.arrays.NP,1)),(1,self.arrays.T)) == (np.tile(np.arange(1,self.arrays.T + 1),(self.arrays.NP,1)))
+        i_obs_x = (i_obs_y == 0)
+
+        BVTT = np.sum(i_obs_y * self.arrays.BVTT,axis=1)
+        sumYBVTT = np.sum(i_obs_x * self.arrays.BVTT*self.arrays.Choice,axis=1)
+        y_regress = np.sum(self.arrays.Choice * i_obs_y,axis=1)
+
+        # Starting values and arguments for minimizer
+        x0 = np.array([self.params.mleScale,self.params.mleIntercept,self.params.mleParameter])
+        args = (sumYBVTT,BVTT,y_regress)
+
+        # return ModelLogit.objectiveFunction(x0,sumYBVTT,BVTT,y_regress)
+
+        # Start minimization routine
+        results = minimize(ModelLogit.objectiveFunction,x0,args=args,method = 'Nelder-Mead')
+
+        # Collect results
+        x = results['x']
+        fval = results['fun']
+        exitflag = results['status']
+        output = results['message']
+
+        return x, fval, exitflag, output
+
+
+    @staticmethod
+    def objectiveFunction(x,sumYBVTT,BVTT,y_regress):
+
+        # Separate parameters
+        scale = x[0]
+        intercept = x[1]
+        parameter = x[2]
+
+        # Create value functions
+        VTT = intercept + parameter*sumYBVTT
+        V1 = scale*BVTT
+        V2 = scale*VTT
+
+        # Create choice probability and Log-likelihood
+        p = np.exp(V1)/(np.exp(V1) + np.exp(V2))
+        ll = - np.sum(np.log(p*(y_regress == 0) + (1-p)*(y_regress==1)))
+
+        # Return choice probability
+        return ll
+
