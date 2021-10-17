@@ -1,6 +1,6 @@
 # Import modules
 from model.data_format import ModelArrays, StudyVar
-from model.model_logit import ModelLogit, ConfigLogit
+from model.model_loclogit import ModelLocLogit, ConfigLocLogit
 from model.data_import import make_modelarrays, compute_descriptives
 
 import pandas as pd
@@ -21,13 +21,14 @@ model_arrays = make_modelarrays(df,columnarrays)
 # Step 2: Do descriptives
 descriptives = compute_descriptives(model_arrays)
 
-# Step 2: Make config
-config = ConfigLogit(1,0.1,1,10000,12345)
+# Step 3: Make config
+config = ConfigLocLogit(0,18,19)
 
-# Step 3: Call model
-logit = ModelLogit(config,model_arrays)
+# Step 4: Call model
+loclogit = ModelLocLogit(config,model_arrays)
 
-x, fval, exitflag, output = logit.run()
+p, fval, vtt_grid = loclogit.run()
 
-print(x, fval, exitflag)
-print(output)
+print(p)
+print(fval)
+print(vtt_grid)
