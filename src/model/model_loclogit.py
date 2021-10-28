@@ -7,12 +7,10 @@
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass
 
-from model.data_format import ModelArrays
-
+import numpy as np
 from scipy.optimize import minimize
 
-import numpy as np
-
+from model.data_format import ModelArrays
 
 
 @dataclass
@@ -34,18 +32,18 @@ class ConfigLocLogit:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
+
 class ModelLocLogit:
-    def __init__(self,params: ConfigLocLogit, arrays: ModelArrays):
+    def __init__(self, params: ConfigLocLogit, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
 
     def run(self):
-
         # Create grid of support points
-        vtt_grid = np.linspace(self.params.minimum,self.params.maximum,self.params.supportPoints)
+        vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
         # Compute the kernel width
-        k = np.r_[vtt_grid,0.] - np.r_[0.,vtt_grid]
+        k = np.r_[vtt_grid, 0.] - np.r_[0., vtt_grid]
         k = k[:-2]
         k[0] = k[1].copy()
 
@@ -56,7 +54,7 @@ class ModelLocLogit:
         p = []
         fval = 0.
         for n in range(len(vtt_grid)-1):
-            x, fval_x = ModelLocLogit.initLocalLogit(n,k[n],self.arrays.BVTT,YX,vtt_grid)
+            x, fval_x = ModelLocLogit.initLocalLogit(n, k[n], self.arrays.BVTT, YX, vtt_grid)
             p.append(x[0])
             fval = fval + fval_x
         
@@ -67,8 +65,7 @@ class ModelLocLogit:
         return p, fval, vtt_grid
 
     @staticmethod
-    def initLocalLogit(n,k,BVTT,YX,vtt_grid):
-
+    def initLocalLogit(n, k, BVTT, YX, vtt_grid):
         # Get observations
         BVTT_flat = BVTT.T.flatten()
         xn = BVTT_flat[(BVTT_flat > (vtt_grid[n]-k)) & (BVTT_flat < (vtt_grid[n] + k))]
@@ -78,10 +75,9 @@ class ModelLocLogit:
         weight = (k-dist)/k
 
         # Search function
-        coef_start = np.array([0.,0.])
-        args = (y_local,xn,x0,weight)
-
-        results = minimize(ModelLocLogit.wlogit,coef_start,args=args,method='Nelder-Mead')
+        coef_start = np.array([0., 0.])
+        args = (y_local, xn, x0, weight)
+        results = minimize(ModelLocLogit.objFunc_wlogit, coef_start, args=args, method='Nelder-Mead')
 
         # Collect results
         x = results['x']
@@ -93,10 +89,10 @@ class ModelLocLogit:
         return x, fval
 
     @staticmethod
-    def wlogit(coef,y_local,xn,x0,weight):
+    def objFunc_wlogit(coef, y_local, xn, x0, weight):
         acc = coef[0] + coef[1]*(xn-x0)
         P = np.exp(acc)/(1+np.exp(acc))
-        LL = np.log(P*(y_local==1) + (1-P)*(y_local==0))
+        LL = np.log(P*(y_local == 1) + (1-P)*(y_local == 0))
         LLw = -sum(weight*LL)
 
         return LLw
