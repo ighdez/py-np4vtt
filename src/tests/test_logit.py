@@ -33,5 +33,11 @@ logit = ModelLogit(config, model_arrays)
 
 x, fval, exitflag, output = logit.run()
 
-print(x, fval, exitflag)
-print(output)
+# Check if the model reached the expected results
+f_final_expected = 2387.1224
+pass_f = (fval < f_final_expected*1.1)
+
+if pass_f:
+    print('Check!')
+else:
+    print('F-value too far from expected.')
