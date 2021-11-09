@@ -40,12 +40,19 @@ class ConfigLogit:
         return errorList
 
 
+@dataclass
+class InitialArgsLogit:
+    sumYBVTT: np.ndarray
+    BVTT: np.ndarray
+    y_regress: np.ndarray
+
+
 class ModelLogit:
     def __init__(self, cfg: ConfigLogit, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
 
-    def run(self):
+    def setupInitialArgs(self) -> Tuple[InitialArgsLogit, float]:
         # Use passed seed if desired
         if self.cfg.seed:
             np.random.seed(self.cfg.seed)
@@ -56,16 +63,22 @@ class ModelLogit:
             == np.tile(np.arange(1, self.arrays.T + 1), (self.arrays.NP, 1))
         i_obs_x = (i_obs_y == 0)
 
-        BVTT = np.sum(i_obs_y * self.arrays.BVTT, axis=1)
-        sumYBVTT = np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1)
-        y_regress = np.sum(self.arrays.Choice * i_obs_y, axis=1)
+        initialArgs = InitialArgsLogit(
+            sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1),
+            BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1),
+            y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1),
+        )
+        initialVal = 0.0
 
-        # Starting values and arguments for minimizer
+        return initialArgs, initialVal
+
+    def run(self, args: InitialArgsLogit):
+        # Starting arguments and values for minimizer
+        argTuple = (args.sumYBVTT, args.BVTT, args.y_regress)
         x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
-        args = (sumYBVTT, BVTT, y_regress)
 
         # Start minimization routine
-        results = minimize(ModelLogit.objectiveFunction, x0, args=args, method='Nelder-Mead')
+        results = minimize(ModelLogit.objectiveFunction, x0, args=argTuple, method='Nelder-Mead')
 
         # Collect results
         x = results['x']

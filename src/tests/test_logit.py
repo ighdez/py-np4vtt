@@ -30,12 +30,14 @@ config = ConfigLogit(1, 0.1, 1, 10000, 12345)
 
 # Step 4: Call model
 logit = ModelLogit(config, model_arrays)
-
-x, fval, exitflag, output = logit.run()
+initialArgs, initialVal = logit.setupInitialArgs()
+x, fval, exitflag, output = logit.run(initialArgs)
 
 # Check if the model reached the expected results
 f_final_expected = 2387.1224
 pass_f = (fval < f_final_expected*1.1)
+
+# TODO: check the initialValue
 
 if pass_f:
     print('Check!')
