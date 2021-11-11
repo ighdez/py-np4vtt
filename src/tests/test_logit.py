@@ -36,7 +36,7 @@ x, fval, exitflag, output = logit.run(initialArgs)
 # Check if the model reached the expected results
 f_initial_expected = 0. # TODO: Grab actual value from MATLAB code
 f_final_expected = 2387.1224
-pass_f_initial = (fval*0.9 < initialVal < fval*1.1)
+pass_f_initial = (f_initial_expected*0.9 < initialVal < f_initial_expected*1.1)
 pass_f_final = (fval < f_final_expected*1.1)
 
 # TODO: check the initialValue
