@@ -63,12 +63,18 @@ class ModelLogit:
             == np.tile(np.arange(1, self.arrays.T + 1), (self.arrays.NP, 1))
         i_obs_x = (i_obs_y == 0)
 
+        # Set vector of starting values of parameters to estimate
+        x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
+
         initialArgs = InitialArgsLogit(
             sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1),
             BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1),
             y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1),
         )
-        initialVal = 0.0
+
+        initialVal = ModelLogit.objectiveFunction(x0,initialArgs.sumYBVTT,initialArgs.BVTT,initialArgs.y_regress)
+
+        # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
         return initialArgs, initialVal
 
@@ -79,6 +85,8 @@ class ModelLogit:
 
         # Start minimization routine
         results = minimize(ModelLogit.objectiveFunction, x0, args=argTuple, method='Nelder-Mead')
+
+        # TODO: check if we can rely in BFGS or my own BFGS
 
         # Collect results
         x = results['x']
