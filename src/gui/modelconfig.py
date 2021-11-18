@@ -28,6 +28,7 @@ class ModelConfigLocLogit(QDialog):
         numPoints = int(self.ui.fieldParamSupportPoints.text())
 
         controller.modelConfig_loclogit(minimum, maximum, numPoints)
+        super().accept()
 
 
 class ModelConfigLogit(QDialog):
@@ -49,6 +50,7 @@ class ModelConfigLogit(QDialog):
             seed = int(self.ui.fieldOptionSeed.text())
 
         controller.modelConfig_logit(intercept, parameter, scale, iterations, seed)
+        super().accept()
 
 
 class ModelConfigRouwendal(QDialog):
@@ -66,6 +68,7 @@ class ModelConfigRouwendal(QDialog):
         maxIterations = int(self.ui.fieldMaxIterations.text())
 
         controller.modelConfig_rouwendal(minimum, maximum, numPoints, probConsistent, maxIterations)
+        super().accept()
 
 
 class ModelConfigANN(QDialog):
@@ -86,3 +89,4 @@ class ModelConfigANN(QDialog):
             seed = int(self.ui.fieldSeed.text())
 
         controller.modelConfig_ann(hiddenLayers, numRepeats, numShuffles, seed)
+        super().accept()

@@ -72,6 +72,7 @@ def modelConfig_loclogit(minimum: float, maximum: float, numPoints: int):
         maximum=maximum,
         supportPoints=numPoints,
     )
+    print(modelcfg_loclogit)  # TODO: debug, remove this
 
 def modelConfig_logit(intercept: float, parameter: float, scale: float, iterations: int, seed: int):
     global modelcfg_logit
@@ -82,6 +83,7 @@ def modelConfig_logit(intercept: float, parameter: float, scale: float, iteratio
         mleMaxIterations=iterations,
         seed=seed,
     )
+    print(modelcfg_logit)  # TODO: debug, remove this
 
 def modelConfig_rouwendal(minimum: float, maximum: float, numPoints: int, probConsistent: float, maxIterations: int):
     global modelcfg_rouwendal
@@ -92,6 +94,7 @@ def modelConfig_rouwendal(minimum: float, maximum: float, numPoints: int, probCo
         startQ=probConsistent,
         # TODO maxIterations?
     )
+    print(modelcfg_rouwendal)  # TODO: debug, remove this
 
 def modelConfig_ann(hiddenLayers: List[int], numRepeats: int, numShuffles: int, seed: int):
     global modelcfg_ann
@@ -101,4 +104,5 @@ def modelConfig_ann(hiddenLayers: List[int], numRepeats: int, numShuffles: int, 
         shufflesPerRepeat=numShuffles,
         seed=seed,
     )
+    print(modelcfg_ann)  # TODO: debug, remove this
 

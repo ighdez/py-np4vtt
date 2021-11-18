@@ -8,7 +8,7 @@
 from pathlib import Path
 
 from PyQt5.Qt import Qt
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QDialog, QLabel
 
 import controller
 from gui.formclasses.ui_mainwindow import Ui_mainWindow
@@ -62,21 +62,25 @@ class MainWindow(QMainWindow):
         self.ui.textDataInfo.setText(descText)
 
         self.setTaskButtonsConfigure(True)
-        self.setStatusLabelsConfigure()
+        self.setStatusLabelsConfigureAll()
 
-    def setStatusLabelsConfigure(self) -> None:
-        self.setStatusLabels('green', 'Configure Options')
-
-    def setStatusLabels(self, colorCSSName: str, noticeText: str) -> None:
+    @staticmethod
+    def setStatusLabel(label: QLabel, colorCSSName: str, noticeText: str) -> None:
         richText = (
             '<html><head></head><body><p>'
             '<span style="color:{color};">{notice}</span>'
             '</p></body></html>'
         ).format(color=colorCSSName, notice=noticeText)
 
-        for label in self.labelsStatus:
-            label.setTextFormat(Qt.TextFormat.RichText)
-            label.setText(richText)
+        label.setTextFormat(Qt.TextFormat.RichText)
+        label.setText(richText)
+
+    def setStatusLabelsConfigureAll(self) -> None:
+        for lab in self.labelsStatus:
+            self.setStatusLabel(lab, 'blue', 'Configure Options')
+
+    def setStatusLabelEstimate(self, label: QLabel) -> None:
+        self.setStatusLabel(label, 'green', 'Ready to estimate')
 
     def disableTaskButtonsStep1(self) -> None:
         """Before loading data, all other buttons are disabled"""
@@ -115,22 +119,26 @@ class MainWindow(QMainWindow):
             if importDialog.exec() == QDialog.Accepted:
                 self.handleImportDone(importDialog.getVarDescriptives())
 
-    @staticmethod
-    def handleConfigLocLogit() -> None:
+    def handleConfigLocLogit(self) -> None:
         dialog = ModelConfigLocLogit()
         dialog.exec()
+        self.setStatusLabelEstimate(self.ui.labelLocalLogitStatus)
+        self.ui.btnLocalLogitEstimate.setEnabled(True)
 
-    @staticmethod
-    def handleConfigLogit() -> None:
+    def handleConfigLogit(self) -> None:
         dialog = ModelConfigLogit()
         dialog.exec()
+        self.setStatusLabelEstimate(self.ui.labelLogisticRegressionStatus)
+        self.ui.btnLogisticRegressionEstimate.setEnabled(True)
 
-    @staticmethod
-    def handleConfigRouwendal() -> None:
+    def handleConfigRouwendal(self) -> None:
         dialog = ModelConfigRouwendal()
         dialog.exec()
+        self.setStatusLabelEstimate(self.ui.labelRouwendalStatus)
+        self.ui.btnRouwendalEstimate.setEnabled(True)
 
-    @staticmethod
-    def handleConfigANN() -> None:
+    def handleConfigANN(self) -> None:
         dialog = ModelConfigANN()
         dialog.exec()
+        self.setStatusLabelEstimate(self.ui.labelANNStatus)
+        self.ui.btnANNTrain.setEnabled(True)
