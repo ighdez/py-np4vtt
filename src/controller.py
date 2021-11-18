@@ -18,12 +18,21 @@ import pandas as pd
 
 from model.data_format import StudyVarMapping, DescriptiveStatsBasic, ModelArrays
 from model.data_import import make_modelarrays, compute_descriptives
+from model.model_ann import ConfigANN
+from model.model_loclogit import ConfigLocLogit
+from model.model_logit import ConfigLogit
+from model.model_rouwendal import ConfigRouwendal
 
 
 dataset_frame: Optional[pd.DataFrame] = None
 dataset_varmapping: StudyVarMapping = {}
 
 model_arrays: Optional[ModelArrays] = None
+
+modelcfg_logit: Optional[ConfigLogit] = None
+modelcfg_loclogit: Optional[ConfigLocLogit] = None
+modelcfg_rouwendal: Optional[ConfigRouwendal] = None
+modelcfg_ann: Optional[ConfigANN] = None
 
 
 def openDataset(chosenPath: Path) -> List[str]:
@@ -57,14 +66,39 @@ def importMappedDataset(mapping: StudyVarMapping) -> DescriptiveStatsBasic:
 
 
 def modelConfig_loclogit(minimum: float, maximum: float, numPoints: int):
-    pass
+    global modelcfg_loclogit
+    modelcfg_loclogit = ConfigLocLogit(
+        minimum=minimum,
+        maximum=maximum,
+        supportPoints=numPoints,
+    )
 
 def modelConfig_logit(intercept: float, parameter: float, scale: float, iterations: int, seed: int):
-    pass
+    global modelcfg_logit
+    modelcfg_logit = ConfigLogit(
+        mleIntercept=intercept,
+        mleParameter=parameter,
+        mleScale=scale,
+        mleMaxIterations=iterations,
+        seed=seed,
+    )
 
 def modelConfig_rouwendal(minimum: float, maximum: float, numPoints: int, probConsistent: float, maxIterations: int):
-    pass
+    global modelcfg_rouwendal
+    modelcfg_rouwendal = ConfigRouwendal(
+        minimum=minimum,
+        maximum=maximum,
+        supportPoints=numPoints,
+        startQ=probConsistent,
+        # TODO maxIterations?
+    )
 
 def modelConfig_ann(hiddenLayers: List[int], numRepeats: int, numShuffles: int, seed: int):
-    pass
+    global modelcfg_ann
+    modelcfg_ann = ConfigANN(
+        hiddenLayerNodes=hiddenLayers,
+        trainingRepeats=numRepeats,
+        shufflesPerRepeat=numShuffles,
+        seed=seed,
+    )
 

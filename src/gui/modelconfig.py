@@ -5,8 +5,6 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from abc import ABC
-
 from PyQt5.QtWidgets import QDialog
 
 from gui.formclasses.ui_modelconfig_ann import Ui_configANNDialog
@@ -16,12 +14,8 @@ from gui.formclasses.ui_modelconfig_rouwendal import Ui_configRouwendalDialog
 
 import controller
 
-# Abstract base class
-class ModelConfig(ABC):
-    pass
 
-
-class ModelConfigLocLogit(QDialog, ModelConfig):
+class ModelConfigLocLogit(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_configLocLogitDialog()
@@ -36,7 +30,7 @@ class ModelConfigLocLogit(QDialog, ModelConfig):
         controller.modelConfig_loclogit(minimum, maximum, numPoints)
 
 
-class ModelConfigLogit(QDialog, ModelConfig):
+class ModelConfigLogit(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_configLogitDialog()
@@ -57,7 +51,7 @@ class ModelConfigLogit(QDialog, ModelConfig):
         controller.modelConfig_logit(intercept, parameter, scale, iterations, seed)
 
 
-class ModelConfigRouwendal(QDialog, ModelConfig):
+class ModelConfigRouwendal(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_configRouwendalDialog()
@@ -74,7 +68,7 @@ class ModelConfigRouwendal(QDialog, ModelConfig):
         controller.modelConfig_rouwendal(minimum, maximum, numPoints, probConsistent, maxIterations)
 
 
-class ModelConfigANN(QDialog, ModelConfig):
+class ModelConfigANN(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_configANNDialog()
