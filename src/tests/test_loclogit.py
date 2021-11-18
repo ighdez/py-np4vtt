@@ -34,8 +34,8 @@ loclogit = ModelLocLogit(config,model_arrays)
 p, fval, vtt_grid = loclogit.run()
 
 # Check if the model reached the expected results
-f_final_expected = 27596.28
-pass_f = (fval < f_final_expected*1.1)
+f_final_expected = -27596.28
+pass_f = (abs(fval) < abs(f_final_expected)*1.1)
 
 if pass_f:
     print('Check!')
