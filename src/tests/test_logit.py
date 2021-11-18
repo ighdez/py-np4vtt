@@ -30,14 +30,23 @@ config = ConfigLogit(1, 0.1, 1, 10000, 12345)
 
 # Step 4: Call model
 logit = ModelLogit(config, model_arrays)
-
-x, fval, exitflag, output = logit.run()
+initialArgs, initialVal = logit.setupInitialArgs()
+x, fval, exitflag, output = logit.run(initialArgs)
 
 # Check if the model reached the expected results
+f_initial_expected = 0. # TODO: Grab actual value from MATLAB code
 f_final_expected = 2387.1224
-pass_f = (fval < f_final_expected*1.1)
+pass_f_initial = (f_initial_expected*0.9 < initialVal < f_initial_expected*1.1)
+pass_f_final = (fval < f_final_expected*1.1)
 
-if pass_f:
-    print('Check!')
+# TODO: check the initialValue
+print('Logistic regression checks:')
+if not pass_f_initial:
+    print('Initial F-value: too far from expected.')
 else:
-    print('F-value too far from expected.')
+    print('Initial F-value: OK')
+
+if not pass_f_final:
+    print('Final F-value:   too far from expected.')
+else:
+    print('Final F-value:   OK')
