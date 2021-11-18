@@ -30,18 +30,12 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="fieldParamMinimum"/>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelParamMaximum">
         <property name="text">
          <string>Maximum:</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="fieldParamMaximum"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="labelParamSupportPoints">
@@ -51,7 +45,17 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="fieldParamSupportPoints"/>
+       <widget class="QSpinBox" name="fieldParamSupportPoints">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="fieldParamMinimum"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="fieldParamMaximum"/>
       </item>
      </layout>
     </widget>

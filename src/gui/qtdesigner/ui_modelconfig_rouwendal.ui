@@ -23,42 +23,42 @@
        </property>
        <layout class="QFormLayout" name="layoutGrpStep1">
         <item row="0" column="0">
-         <widget class="QLabel" name="labelPointsMinimum">
+         <widget class="QLabel" name="labelParamMinimum">
           <property name="text">
            <string>Minimum:</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="fieldPointsMinimum">
+         <widget class="QSpinBox" name="fieldParamMinimum">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="labelPointsMaximum">
+         <widget class="QLabel" name="labelParamMaximum">
           <property name="text">
            <string>Maximum:</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="fieldPointsMaximum">
+         <widget class="QSpinBox" name="fieldParamMaximum">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="labelPointsSupport">
+         <widget class="QLabel" name="labelParamSupportPoints">
           <property name="text">
            <string>Number of support points:</string>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="fieldPointsSupport">
+         <widget class="QSpinBox" name="fieldParamSupportPoints">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>

@@ -60,9 +60,9 @@ class ModelConfigRouwendal(QDialog):
         self.ui.setupUi(self)
 
     def accept(self) -> None:
-        minimum = float(self.ui.fieldPointsMinimum.text())
-        maximum = float(self.ui.fieldPointsMaximum.text())
-        numPoints = int(self.ui.fieldPointsSupport.text())
+        minimum = float(self.ui.fieldParamMinimum.text())
+        maximum = float(self.ui.fieldParamMaximum.text())
+        numPoints = int(self.ui.fieldParamSupportPoints.text())
 
         probConsistent = float(self.ui.sliderProbConsistent.value()) / 100
         maxIterations = int(self.ui.fieldMaxIterations.text())
