@@ -8,6 +8,8 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from model.data_format import ModelArrays
+
 
 @dataclass
 class ConfigANN:
@@ -30,3 +32,19 @@ class ConfigANN:
 
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
+
+
+@dataclass
+class InitialArgsANN:
+    pass
+
+
+class ModelANN:
+    def __init__(self, cfg: ConfigANN, arrays: ModelArrays):
+        pass
+
+    def setupInitialArgs(self) -> InitialArgsANN:
+        pass
+
+    def run(self) -> None:
+        pass
