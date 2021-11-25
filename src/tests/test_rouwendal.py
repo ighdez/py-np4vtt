@@ -36,7 +36,7 @@ q_prob, q_est, par, fvtt, cumsum_fvtt, vtt_grid, fval, exitflag, output = rouwen
 
 # Check if the model reached the expected results
 f_initial_expected = 0.  # TODO: Grab actual value from MATLAB code
-f_final_expected = 23335.63
+f_final_expected = -23335.63
 q_prob_expected = 0.90069
 
 # TODO: check the initialValue

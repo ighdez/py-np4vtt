@@ -65,7 +65,7 @@ class ModelRouwendal:
             Choice=self.arrays.Choice,
             vtt_grid=vtt_grid)
 
-        initialVal = ModelRouwendal.objectiveFunction(x0, initialArgs.NP, initialArgs.T, initialArgs.BVTT,
+        initialVal = -ModelRouwendal.objectiveFunction(x0, initialArgs.NP, initialArgs.T, initialArgs.BVTT,
                                                       initialArgs.Choice, initialArgs.vtt_grid)
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
@@ -84,7 +84,7 @@ class ModelRouwendal:
 
         # Collect results
         x = results['x']
-        fval = results['fun']
+        fval = -results['fun']
         exitflag = results['status']
         output = results['message']
 
