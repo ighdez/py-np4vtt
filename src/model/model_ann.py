@@ -10,7 +10,12 @@ from typing import List, Optional
 
 from model.data_format import ModelArrays
 
+import numpy as np
 
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.model_selection import train_test_split
 @dataclass
 class ConfigANN:
     hiddenLayerNodes: List[int]
@@ -36,14 +41,40 @@ class ConfigANN:
 
 @dataclass
 class InitialArgsANN:
-    pass
+    t_choice: np.ndarray
+    tplus_choice: np.ndarray
 
 
 class ModelANN:
     def __init__(self, cfg: ConfigANN, arrays: ModelArrays):
-        pass
+        self.cfg = cfg
+        self.arrays = arrays
 
     def setupInitialArgs(self) -> InitialArgsANN:
+
+        # Initialise arrays for randomisation
+        shuffle_index = np.zeros((self.cfg.shufflesPerRepeat,self.arrays.T+1))
+        full_data_array = np.zeros((self.arrays.NP,self.cfg.shufflesPerRepeat*(self.arrays.T+1),2))
+
+        # Randomise data
+        for n in range(self.arrays.NP):
+            for m in range(self.cfg.shufflesPerRepeat):
+                rnd11 = np.arange(self.arrays.T)
+                np.random.shuffle(rnd11)
+                shuffle_index[m,:] = np.hstack((rnd11,rnd11[np.random.randint(1,self.cfg.T-1)]))
+            
+            full_data_array[n,:,0] = self.arrays.Choice[n,shuffle_index.astype(int).flatten()]
+            full_data_array[n,:,1] = self.arrays.BVTT[n,shuffle_index.astype(int).flatten()]
+
+        # Create input and output arrays for ANN
+        full_data_array = np.hstack((np.reshape(full_data_array[:,:,0].T,(self.arrays.T+1,self.cfg.shufflesPerRepeat*self.arrays.NP),order='F').T,np.reshape(xx[:,:,1].T,(K+1,R*N),order='F').T))
+        t = full_data_array[:,0]
+        x = full_data_array[:,1:]
+
+        # Separate in train and test
+        X_train, X_test, y_train, y_test = train_test_split(x,t,test_size = 0.15)
+
+        # TODO: create ANN structure
         pass
 
     def run(self) -> None:
