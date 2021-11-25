@@ -30,7 +30,7 @@ descriptives = compute_descriptives(model_arrays)
 config = ConfigLocLogit(minimum=0, maximum=18, supportPoints=19)
 
 # Step 4: Call model
-loclogit = ModelLocLogit(config,model_arrays)
+loclogit = ModelLocLogit(config, model_arrays)
 p, fval, vtt_grid = loclogit.run()
 
 

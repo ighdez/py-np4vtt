@@ -52,20 +52,21 @@ class ModelRouwendal:
 
     def setupInitialArgs(self) -> Tuple[InitialArgsRouwendal, float]:
         # Create grid of support points
-        vtt_grid = np.linspace(self.cfg.minimum,self.cfg.maximum,self.cfg.supportPoints)
+        vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
 
         # Set vector of starting values of parameters to estimate
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
-        x0 = np.hstack([q0,np.zeros(len(vtt_grid))])
+        x0 = np.hstack([q0, np.zeros(len(vtt_grid))])
 
         initialArgs = InitialArgsRouwendal(
-            NP = self.arrays.NP,
-            T = self.arrays.T,
-            BVTT = self.arrays.BVTT,
-            Choice = self.arrays.Choice,
-            vtt_grid = vtt_grid)
+            NP=self.arrays.NP,
+            T=self.arrays.T,
+            BVTT=self.arrays.BVTT,
+            Choice=self.arrays.Choice,
+            vtt_grid=vtt_grid)
 
-        initialVal = ModelRouwendal.objectiveFunction(x0,initialArgs.NP,initialArgs.T,initialArgs.BVTT,initialArgs.Choice,initialArgs.vtt_grid)
+        initialVal = ModelRouwendal.objectiveFunction(x0, initialArgs.NP, initialArgs.T, initialArgs.BVTT,
+                                                      initialArgs.Choice, initialArgs.vtt_grid)
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
@@ -75,11 +76,11 @@ class ModelRouwendal:
 
         # Starting values
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
-        x0 = np.hstack([q0,np.zeros(len(args.vtt_grid))])
-        argTuple = (args.NP,args.T,args.BVTT,args.Choice,args.vtt_grid)
+        x0 = np.hstack([q0, np.zeros(len(args.vtt_grid))])
+        argTuple = (args.NP, args.T, args.BVTT, args.Choice, args.vtt_grid)
 
         # Start optimization
-        results = minimize(ModelRouwendal.objectiveFunction,x0,args=argTuple,method='BFGS')
+        results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='BFGS')
 
         # Collect results
         x = results['x']
@@ -103,21 +104,21 @@ class ModelRouwendal:
         return q_prob, q_est, par, fvtt, cumsum_fvtt, args.vtt_grid, fval, exitflag, output
 
     @staticmethod
-    def objectiveFunction(x,NP,T,BVTT,Choice,vtt_grid):
+    def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):
         
         # Re-scale Q and FVTT to fit between zero and one
-        q = np.exp(x[0])/(1+np.exp(x[0]))
-        fvtt = np.exp(x[1:])/np.sum(np.exp(x[1:]))
+        q = np.exp(x[0]) / (1 + np.exp(x[0]))
+        fvtt = np.exp(x[1:]) / np.sum(np.exp(x[1:]))
 
         # Conditional probability
-        P = np.zeros((NP,len(vtt_grid)))
+        P = np.zeros((NP, len(vtt_grid)))
 
         for n in range(len(vtt_grid)):
-            tau = np.sum(((vtt_grid[n] > BVTT)==Choice).astype(int),axis=1)
-            P[:,n] = (q**tau)*((1-q)**(T-tau))
+            tau = np.sum(((vtt_grid[n] > BVTT) == Choice).astype(int), axis=1)
+            P[:, n] = (q**tau) * ((1-q) ** (T-tau))
             
         # Maximise log-likelihood. L is computed by multiplying conditional P
         # with density fvtt, average and sum across all obs
-        L = -np.sum(np.log(np.sum(fvtt*P,axis=1)))
+        L = -np.sum(np.log(np.sum(fvtt*P, axis=1)))
 
         return L

@@ -72,7 +72,7 @@ class ModelLogit:
             y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1),
         )
 
-        initialVal = ModelLogit.objectiveFunction(x0,initialArgs.sumYBVTT,initialArgs.BVTT,initialArgs.y_regress)
+        initialVal = ModelLogit.objectiveFunction(x0, initialArgs.sumYBVTT, initialArgs.BVTT, initialArgs.y_regress)
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
@@ -97,7 +97,7 @@ class ModelLogit:
         return x, fval, exitflag, output
 
     @staticmethod
-    def objectiveFunction(x: Tuple[float, float, float], sumYBVTT: np.float64, BVTT: np.float64, y_regress: np.float64):
+    def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
         # Separate parameters: x is the estimated (multi-dimensional) parameter
         scale, intercept, parameter = x
 

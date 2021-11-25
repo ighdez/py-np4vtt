@@ -77,7 +77,7 @@ class ModelLocLogit:
         # Search function
         coef_start = np.array([0., 0.])
         args = (y_local, xn, x0, weight)
-        results = minimize(ModelLocLogit.objFunc_wlogit, coef_start, args=args, method='Nelder-Mead')
+        results = minimize(ModelLocLogit.objectiveFunction, coef_start, args=args, method='Nelder-Mead')
 
         # Collect results
         x = results['x']
@@ -89,7 +89,7 @@ class ModelLocLogit:
         return x, fval
 
     @staticmethod
-    def objFunc_wlogit(coef, y_local, xn, x0, weight):
+    def objectiveFunction(coef: np.ndarray, y_local: np.ndarray, xn: np.ndarray, x0: np.ndarray, weight: np.ndarray):
         acc = coef[0] + coef[1]*(xn-x0)
         P = np.exp(acc)/(1+np.exp(acc))
         LL = np.log(P*(y_local == 1) + (1-P)*(y_local == 0))
