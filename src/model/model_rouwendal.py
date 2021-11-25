@@ -6,12 +6,11 @@
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Tuple
 from scipy.optimize import minimize
 import numpy as np
 
 from model.data_format import ModelArrays
-
 
 
 @dataclass
@@ -31,7 +30,7 @@ class ConfigRouwendal:
         if not self.supportPoints > 0:
             errorList.append('No. of support points must be greater than zero.')
 
-        if not (self.startQ > 0 and self.startQ < 1):
+        if not (0 < self.startQ < 1):
             errorList.append('Probability of consistent choice must be in the interval (0,1).')
 
         # Whoever calls this validator knows that empty errorList means validator success
