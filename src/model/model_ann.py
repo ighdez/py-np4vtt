@@ -12,10 +12,10 @@ from model.data_format import ModelArrays
 
 import numpy as np
 
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import log_loss
+
 @dataclass
 class ConfigANN:
     hiddenLayerNodes: List[int]
@@ -41,9 +41,11 @@ class ConfigANN:
 
 @dataclass
 class InitialArgsANN:
-    t_choice: np.ndarray
-    tplus_choice: np.ndarray
-
+    X_train: np.ndarray
+    X_test: np.ndarray
+    y_train: np.ndarray
+    y_test: np.ndarray
+    ann_topology: tuple
 
 class ModelANN:
     def __init__(self, cfg: ConfigANN, arrays: ModelArrays):
@@ -74,8 +76,35 @@ class ModelANN:
         # Separate in train and test
         X_train, X_test, y_train, y_test = train_test_split(x,t,test_size = 0.15)
 
-        # TODO: create ANN structure
-        pass
+        initialArgs = InitialArgsANN(
+            X_train = X_train,
+            X_test = X_test,
+            y_train = y_train,
+            y_test = y_test,
+            ann_topology = tuple(self.cfg.hiddenLayerNodes))
 
-    def run(self) -> None:
+        return initialArgs
+
+    def run(self, args: InitialArgsANN) -> None:
+        
+        # for r in range(self.cfg.trainingRepeats):
+        
+        # # Setup and fit the ANN
+        # clf = MLPClassifier(
+        #     hidden_layer_sizes=args.ann_topology,
+        #     activation='tanh',
+        #     tol=1e-4,
+        #     n_iter_no_change=6).fit(args.X_train,args.y_train)
+
+        # # Predict in test sample
+        # y_predict = clf.predict_proba(args.X_test)
+
+        # # Get train and test loss
+        # train_loss = clf.best_loss_
+        # test_loss = log_loss(args.y_test,y_predict)
+
+        # # Compute log-likelihood and Rho-sq in full sample
+        # LL = -len(args.y_train)*train_loss - len(args.y_test)*test_loss
+        # rho_sq = 1 - (LL/(np.log(0.5)*len(args.y_train)))
+
         pass
