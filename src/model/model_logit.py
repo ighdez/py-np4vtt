@@ -72,7 +72,7 @@ class ModelLogit:
             y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1),
         )
 
-        initialVal = ModelLogit.objectiveFunction(x0, initialArgs.sumYBVTT, initialArgs.BVTT, initialArgs.y_regress)
+        initialVal = -ModelLogit.objectiveFunction(x0, initialArgs.sumYBVTT, initialArgs.BVTT, initialArgs.y_regress)
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
@@ -90,7 +90,7 @@ class ModelLogit:
 
         # Collect results
         x = results['x']
-        fval = results['fun']
+        fval = -results['fun']
         exitflag = results['status']
         output = results['message']
 
