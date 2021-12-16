@@ -5,10 +5,12 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from time import sleep
 from typing import Union
 from enum import Enum, auto, unique
 
 from PyQt5.Qt import Qt
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
 from gui.formclasses.ui_progress import Ui_progressDialog
@@ -30,6 +32,17 @@ class MethodType(Enum):
 MethodConfig = Union[ConfigLocLogit, ConfigLogit, ConfigRouwendal, ConfigANN]
 
 
+class EstimationWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        for i in range(5):
+            sleep(1.0)
+            self.progress.emit(i + 1)
+        self.finished.emit()
+
+
 class EstimationProgress(QDialog):
     def __init__(self, methodType: MethodType, methodCfg: MethodConfig, parent=None):
         super().__init__(parent)
@@ -39,8 +52,6 @@ class EstimationProgress(QDialog):
 
         self.ui = Ui_progressDialog()
         self.ui.setupUi(self)
-
-        self.runMethod()
 
     def setStatusWithColor(self, colorCSSName: str, statusMsg: str) -> None:
         richText = (
@@ -55,5 +66,6 @@ class EstimationProgress(QDialog):
     def setStatusOptimizing(self) -> None:
         self.setStatusWithColor('blue', 'Optimizing')
 
-    def runMethod(self) -> None:
-        pass
+    def reportStatus(self, progressValue: int) -> None:
+        print(f"EstimationProgress.reportStatus({progressValue})")
+        self.ui.textLog.append(f"EstimationProgress.reportStatus({progressValue})")

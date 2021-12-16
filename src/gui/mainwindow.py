@@ -14,7 +14,7 @@ import controller
 from gui.formclasses.ui_mainwindow import Ui_mainWindow
 from gui.import_variables import ImportVariables
 from gui.modelconfig import ModelConfigLocLogit, ModelConfigLogit, ModelConfigRouwendal, ModelConfigANN
-from gui.progress import EstimationProgress, MethodType
+from gui.progress import EstimationProgress, MethodType, EstimationWorker
 
 from model.data_format import DescriptiveStatsBasic
 
@@ -150,21 +150,25 @@ class MainWindow(QMainWindow):
         self.ui.btnANNTrain.setEnabled(True)
 
     def handleEstimateLocLogit(self) -> None:
-        dialog = EstimationProgress(MethodType.MethodLocLogit, controller.modelcfg_loclogit)
-        dialog.exec()
-        dialog.ui.textLog.setText(str(controller.modelcfg_loclogit))
+        progressDialog = EstimationProgress(MethodType.MethodLocLogit, controller.modelcfg_loclogit)
+        progressDialog.ui.textLog.setText(str(controller.modelcfg_loclogit))
+
+        progressWorker = EstimationWorker()
+        controller.modelEstimate_loclogit(progressWorker, progressDialog)
+
+        progressDialog.exec()
 
     def handleEstimateLogit(self) -> None:
         dialog = EstimationProgress(MethodType.MethodLogit, controller.modelcfg_logit)
-        dialog.exec()
         dialog.ui.textLog.setText(str(controller.modelcfg_logit))
+        dialog.exec()
 
     def handleEstimateRouwendal(self) -> None:
         dialog = EstimationProgress(MethodType.MethodRouwendal, controller.modelcfg_rouwendal)
-        dialog.exec()
         dialog.ui.textLog.setText(str(controller.modelcfg_rouwendal))
+        dialog.exec()
 
     def handleEstimateANN(self) -> None:
         dialog = EstimationProgress(MethodType.MethodANN, controller.modelcfg_ann)
-        dialog.exec()
         dialog.ui.textLog.setText(str(controller.modelcfg_ann))
+        dialog.exec()
