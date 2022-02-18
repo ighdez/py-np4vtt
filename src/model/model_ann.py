@@ -92,11 +92,12 @@ class ModelANN:
 
         return initialArgs
 
-    def run(self, args: InitialArgsANN, verbose=True) -> None:
+    def run(self, args: InitialArgsANN, verbose=False) -> None:
         
-        LL = []
+        ll_list = []
         rho_sq = []
         y_predict = []
+        VTT_mid_list = []
 
         for r in range(self.cfg.trainingRepeats):
             
@@ -109,6 +110,7 @@ class ModelANN:
                 tol=1e-4,
                 n_iter_no_change=6,
                 max_iter=1000,
+                early_stopping=True,
                 validation_fraction=0.1275,
                 verbose=False).fit(args.X_train,args.y_train)
 
@@ -125,7 +127,7 @@ class ModelANN:
             # # Compute log-likelihood and Rho-sq in full sample
             ll = -len(args.y_train)*train_loss - len(args.y_test)*test_loss
             r2 = 1 - (ll/(np.log(0.5)*len(args.y_full)))
-            LL.append(ll)
+            ll_list.append(ll)
             rho_sq.append(r2)
 
             if verbose:
@@ -133,7 +135,7 @@ class ModelANN:
             
             # Simulate N-choice of each individual using the ANN
             vtt_grid = np.tile(np.linspace(0,1.5*args.X_full.max(),101),(self.arrays.Accepts.shape[0],1))
-            y_pred_N = ModelANN.simulateNChoice(self,clf,self.arrays.Choice,vtt_grid,args.X_full,20)
+            y_pred_N = ModelANN.simulateNChoice(self,clf,self.arrays.Choice,vtt_grid,self.arrays.BVTT,20)
 
             # Recover individual VTTs, using simulation of choice probs
             VTT_mid = np.zeros(self.arrays.NP)
@@ -142,9 +144,10 @@ class ModelANN:
                     delta_x = vtt_grid[n,np.where((y_pred_N[n,:]-0.5)>=0)[0][-1]] - vtt_grid[n,np.where((y_pred_N[n,:]-0.5)<=0)[0][0]]
                     delta_y = y_pred_N[n,np.where((y_pred_N[n,:]-0.5)>=0)[0][-1]] - y_pred_N[n,np.where((y_pred_N[n,:]-0.5)<=0)[0][0]]
                     VTT_mid[n] = vtt_grid[n,np.where((y_pred_N[n,:]-0.5)>=0)[0][-1]] - (y_pred_N[n,np.where((y_pred_N[n,:]-0.5)>=0)[0][-1]]-0.5)/(delta_y/delta_x)
-            print(VTT_mid.mean())
 
-        return LL, rho_sq, y_predict
+            VTT_mid_list.append(VTT_mid)
+
+        return np.array(ll_list), np.array(rho_sq), np.array(y_predict), np.array(VTT_mid_list)
 
     @staticmethod
     def simulateNChoice(self,clf,y,vtt_grid,X,R):
@@ -153,10 +156,11 @@ class ModelANN:
         x_sim = np.zeros((y.shape[0]*vtt_grid.shape[1],2*self.arrays.T+1,R))
         y_sim = np.zeros((y.shape[0],vtt_grid.shape[1],R))
         
-        for n in range(len(y)):
+        for n in range(y.shape[0]):
             for r in range(R):
                 rndp = np.arange(self.arrays.T)
                 np.random.shuffle(rndp)
+
                 x_sim[(n*vtt_grid.shape[1]):((n+1)*vtt_grid.shape[1]),:,r] = np.c_[np.tile(y[n,rndp],(vtt_grid.shape[1],1)), vtt_grid[n,:].T, np.tile(X[n,rndp],(vtt_grid.shape[1],1))]
         
         for r in range(R):
