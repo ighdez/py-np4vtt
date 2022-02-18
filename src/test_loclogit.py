@@ -5,7 +5,7 @@ from model.data_format import StudyVar
 from model.model_loclogit import ModelLocLogit, ConfigLocLogit
 from model.data_import import make_modelarrays, compute_descriptives
 
-from tests.helpers import check_in_range
+from helpers import check_in_range
 
 
 # Step 1: read CSV file
@@ -19,7 +19,7 @@ columnarrays = {
 }
 
 curscript_dir = Path(__file__).resolve().parent
-df = pd.read_table(curscript_dir.parent.parent / 'data' / 'Norway09_data_v5.txt')
+df = pd.read_table(curscript_dir.parent / 'data' / 'Norway09_data_v5.txt')
 
 model_arrays = make_modelarrays(df, columnarrays)
 
