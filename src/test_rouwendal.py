@@ -6,6 +6,9 @@ from model.data_format import ModelArrays, StudyVar
 from model.model_rouwendal import ConfigRouwendal, ModelRouwendal
 from model.data_import import make_modelarrays, compute_descriptives
 
+from helpers import check_in_range
+
+
 # Step 1: read CSV file
 columnarrays = {StudyVar.Id: 'RespID',
                 StudyVar.ChosenAlt: 'Chosen',
@@ -16,7 +19,7 @@ columnarrays = {StudyVar.Id: 'RespID',
 }
 
 curscript_dir = Path(__file__).resolve().parent
-df = pd.read_table(curscript_dir.parent.parent / 'data' / 'Norway09_data_v5.txt')
+df = pd.read_table(curscript_dir.parent / 'data' / 'Norway09_data_v5.txt')
 
 model_arrays = make_modelarrays(df,columnarrays)
 
