@@ -14,6 +14,7 @@ import controller
 from gui.formclasses.ui_mainwindow import Ui_mainWindow
 from gui.import_variables import ImportVariables
 from gui.modelconfig import ModelConfigLocLogit, ModelConfigLogit, ModelConfigRouwendal, ModelConfigANN
+from gui.progress import EstimationProgress, MethodType, EstimationWorker
 
 from model.data_format import DescriptiveStatsBasic
 
@@ -56,6 +57,11 @@ class MainWindow(QMainWindow):
         self.ui.btnLogisticRegressionConf.clicked.connect(self.handleConfigLogit)
         self.ui.btnRouwendalConf.clicked.connect(self.handleConfigRouwendal)
         self.ui.btnANNConf.clicked.connect(self.handleConfigANN)
+
+        self.ui.btnLocalLogitEstimate.clicked.connect(self.handleEstimateLocLogit)
+        self.ui.btnLogisticRegressionEstimate.clicked.connect(self.handleEstimateLogit)
+        self.ui.btnRouwendalEstimate.clicked.connect(self.handleEstimateLogit)
+        self.ui.btnANNTrain.clicked.connect(self.handleEstimateANN)
 
     def handleImportDone(self, varDescriptives: DescriptiveStatsBasic) -> None:
         descText = str(varDescriptives)
@@ -142,3 +148,27 @@ class MainWindow(QMainWindow):
         dialog.exec()
         self.setStatusLabelEstimate(self.ui.labelANNStatus)
         self.ui.btnANNTrain.setEnabled(True)
+
+    def handleEstimateLocLogit(self) -> None:
+        progressDialog = EstimationProgress(MethodType.MethodLocLogit, controller.modelcfg_loclogit)
+        progressDialog.ui.textLog.setText(str(controller.modelcfg_loclogit))
+
+        progressWorker = EstimationWorker()
+        controller.modelEstimate_loclogit(progressWorker, progressDialog)
+
+        progressDialog.exec()
+
+    def handleEstimateLogit(self) -> None:
+        dialog = EstimationProgress(MethodType.MethodLogit, controller.modelcfg_logit)
+        dialog.ui.textLog.setText(str(controller.modelcfg_logit))
+        dialog.exec()
+
+    def handleEstimateRouwendal(self) -> None:
+        dialog = EstimationProgress(MethodType.MethodRouwendal, controller.modelcfg_rouwendal)
+        dialog.ui.textLog.setText(str(controller.modelcfg_rouwendal))
+        dialog.exec()
+
+    def handleEstimateANN(self) -> None:
+        dialog = EstimationProgress(MethodType.MethodANN, controller.modelcfg_ann)
+        dialog.ui.textLog.setText(str(controller.modelcfg_ann))
+        dialog.exec()

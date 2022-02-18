@@ -15,7 +15,9 @@ from pathlib import Path
 import csv
 
 import pandas as pd
+from PyQt5.QtCore import QThread
 
+from gui.progress import EstimationWorker, EstimationProgress
 from model.data_format import StudyVarMapping, DescriptiveStatsBasic, ModelArrays
 from model.data_import import make_modelarrays, compute_descriptives
 from model.model_ann import ConfigANN
@@ -33,6 +35,8 @@ modelcfg_logit: Optional[ConfigLogit] = None
 modelcfg_loclogit: Optional[ConfigLocLogit] = None
 modelcfg_rouwendal: Optional[ConfigRouwendal] = None
 modelcfg_ann: Optional[ConfigANN] = None
+
+__estimation_thread: Optional[QThread] = None
 
 
 def openDataset(chosenPath: Path) -> List[str]:
@@ -106,3 +110,24 @@ def modelConfig_ann(hiddenLayers: List[int], numRepeats: int, numShuffles: int, 
     )
     print(modelcfg_ann)  # TODO: debug, remove this
 
+def modelEstimate_rouwendal():
+    pass
+
+def modelEstimate_ann():
+    pass
+
+def modelEstimate_loclogit(progressWorker: EstimationWorker, progressDialog: EstimationProgress):
+    global __estimation_thread
+    __estimation_thread = QThread()
+    progressWorker.moveToThread(__estimation_thread)
+
+    __estimation_thread.started.connect(progressWorker.run)
+    progressWorker.finished.connect(__estimation_thread.quit)
+    progressWorker.finished.connect(progressWorker.deleteLater)
+    __estimation_thread.finished.connect(__estimation_thread.deleteLater)
+    progressWorker.progress.connect(progressDialog.reportStatus)
+
+    __estimation_thread.start()
+
+def modelEstimate_logit():
+    pass
