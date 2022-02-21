@@ -77,7 +77,7 @@ target/
 __pypackages__/
 
 # Environments
-.env
+.env*
 env/
 venv/
 ENV/

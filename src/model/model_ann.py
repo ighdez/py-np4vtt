@@ -6,7 +6,7 @@
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass
-from ast import arg
+
 from typing import List, Optional
 from model.data_format import ModelArrays
 
@@ -87,7 +87,6 @@ class ModelANN:
             y_train = y_train,
             y_test = y_test,
             y_full = t,
-            # ann_topology = tuple(self.cfg.hiddenLayerNodes))
             ann_topology = self.cfg.hiddenLayerNodes)
 
         return initialArgs
@@ -108,6 +107,7 @@ class ModelANN:
                 hidden_layer_sizes=args.ann_topology,
                 activation='tanh',
                 tol=1e-4,
+                alpha=0.,
                 n_iter_no_change=6,
                 max_iter=1000,
                 early_stopping=True,
