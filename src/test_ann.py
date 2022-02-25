@@ -47,11 +47,11 @@ pass_r2 = (r2_expected*0.9 < r2_mean < r2_expected*1.1)
 
 print('ANN checks:')
 if not pass_ll:
-    print('F-value: too far from expected.')
+    print('Log-likelihood: too far from expected. Expected={ll_expected}, Actual={ll_mean}')
 else:
-    print('F-value: OK')
+    print('Log-likelihood: OK')
 
 if not pass_r2:
-    print('Rho-squared:   too far from expected.')
+    print('Rho-squared: too far from expected. Expected={r2_expected}, Actual={r2_mean}')
 else:
-    print('Rho-squared:   OK')
+    print('Rho-squared: OK')
