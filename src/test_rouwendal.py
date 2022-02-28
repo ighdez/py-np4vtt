@@ -32,15 +32,15 @@ config = ConfigRouwendal(0,17,18,0.9)
 # Step 4: Call model
 rouwendal = ModelRouwendal(config,model_arrays)
 initialArgs, initialVal = rouwendal.setupInitialArgs()
-q_prob, q_est, par, fvtt, cumsum_fvtt, vtt_grid, fval, exitflag, output = rouwendal.run(initialArgs)
+q_prob, q_est, q_se, par, se, fvtt, cumsum_fvtt, vtt_grid, fval, exitflag, output = rouwendal.run(initialArgs)
 
 # Check if the model reached the expected results
-f_initial_expected = 0. # TODO: Grab actual value from MATLAB code
-f_final_expected = 23335.63
+f_initial_expected = -29058.2262
+f_final_expected = -23335.63
 q_prob_expected = 0.90069
 
-pass_f_initial = (f_initial_expected*0.9 < initialVal < f_initial_expected*1.1)
-pass_f_final = (fval < f_final_expected*1.1)
+pass_f_initial = (-f_initial_expected*0.9 < -initialVal < -f_initial_expected*1.1)
+pass_f_final = (-f_final_expected*0.9 < -fval < -f_final_expected*1.1)
 pass_q = (q_prob_expected*0.99 < q_prob < q_prob_expected*1.01)
 
 # TODO: check the initialValue

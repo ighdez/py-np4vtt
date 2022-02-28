@@ -31,7 +31,8 @@ config = ConfigLocLogit(minimum=0, maximum=18, supportPoints=19)
 
 # Step 4: Call model
 loclogit = ModelLocLogit(config, model_arrays)
-p, fval, vtt_grid = loclogit.run()
+initialArgs = loclogit.setupInitialArgs()
+p, fval, vtt_grid = loclogit.run(initialArgs)
 
 
 # Check if the model reached the expected results

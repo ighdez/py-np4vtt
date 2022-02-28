@@ -8,6 +8,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 from scipy.optimize import minimize
+from numdifftools import Hessian
 import numpy as np
 
 from model.data_format import ModelArrays
@@ -80,10 +81,12 @@ class ModelRouwendal:
         argTuple = (args.NP, args.T, args.BVTT, args.Choice, args.vtt_grid)
 
         # Start optimization
-        results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='BFGS')
+        results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']
+        hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,args.NP, args.T, args.BVTT, args.Choice, args.vtt_grid)
+        se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
         output = results['message']
@@ -94,6 +97,7 @@ class ModelRouwendal:
         # Get estimated probability of consistent choice
         q_prob = np.exp(x[0])/(1+np.exp(x[0]))
         q_est = x[0]
+        q_se = np.sqrt((np.exp(q_est)/(1+np.exp(q_est)))**2)**2 * se[0]**2
 
         # Get estimated FVTT and parameters
         par = x[1:]
@@ -101,7 +105,7 @@ class ModelRouwendal:
         cumsum_fvtt = np.cumsum(fvtt)
 
         # Return output
-        return q_prob, q_est, par, fvtt, cumsum_fvtt, args.vtt_grid, fval, exitflag, output
+        return q_prob, q_est, q_se, par, se, fvtt, cumsum_fvtt, args.vtt_grid, fval, exitflag, output
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):
