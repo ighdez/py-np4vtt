@@ -7,7 +7,10 @@
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+from numpy import ndarray
+
 from model.data_format import ModelArrays
 
 import numpy as np
@@ -91,8 +94,7 @@ class ModelANN:
 
         return initialArgs
 
-    def run(self, args: InitialArgsANN, verbose=False) -> None:
-        
+    def run(self, args: InitialArgsANN, verbose=False) -> tuple[ndarray, ndarray, ndarray, ndarray]:
         ll_list = []
         rho_sq = []
         y_predict = []
