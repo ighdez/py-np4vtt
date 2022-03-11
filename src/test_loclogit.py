@@ -7,8 +7,6 @@
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from pathlib import Path
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 
 from model.data_format import StudyVar
 from model.model_loclogit import ModelLocLogit, ConfigLocLogit
@@ -53,28 +51,6 @@ def run_test():
         print(f'Final F-value: FAIL too far from expected. Expected={f_final_expected}, Actual={fval}')
 
     return vtt_grid, p
-
-
-# Plot here quickly, we will make this nice into the library
-def run_plot(vtts, probs):
-    fig = plt.figure()
-    axs = fig.add_subplot(1, 1, 1)  # Single subfigure
-
-    axs.set_title('Local logit ECDF')
-    axs.set_xlabel('VTT')
-    axs.set_ylabel('Cumulative density')
-
-    axs.xaxis.grid()
-    axs.yaxis.grid()
-
-    data_x = vtts
-    data_y = np.append(probs, [1.0])
-
-    axs.plot(data_x, data_y, 'bo-')
-
-    axs.set_yticks(np.linspace(0.0, 1.0, 10))
-
-    plt.show()
 
 
 if __name__ == '__main__':
