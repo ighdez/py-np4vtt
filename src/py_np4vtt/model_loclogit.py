@@ -6,7 +6,6 @@
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass
-
 import numpy as np
 from scipy.optimize import minimize
 
@@ -32,13 +31,19 @@ class ConfigLocLogit:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
+@dataclass
+class InitialArgsLocLogit:
+    vtt_grid: np.ndarray
+    k: np.ndarray
+    YX: np.ndarray
 
 class ModelLocLogit:
     def __init__(self, params: ConfigLocLogit, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
 
-    def run(self):
+    def setupInitialArgs(self) -> InitialArgsLocLogit:
+
         # Create grid of support points
         vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
@@ -47,14 +52,21 @@ class ModelLocLogit:
         k = k[:-2]
         k[0] = k[1].copy()
 
-        # Flatten choice
-        YX = self.arrays.Choice.T.flatten()
+        initialArgs = InitialArgsLocLogit(
+            vtt_grid = vtt_grid.copy(),
+            k = k.copy(),
+            YX = self.arrays.Choice.T.flatten()
+        )
+
+        return initialArgs
+
+    def run(self, args: InitialArgsLocLogit):
 
         # Perform a weighted logit for each support point
         p = []
         fval = 0.
-        for n in range(len(vtt_grid)-1):
-            x, fval_x = ModelLocLogit.initLocalLogit(n, k[n], self.arrays.BVTT, YX, vtt_grid)
+        for n in range(len(args.vtt_grid)-1):
+            x, fval_x = ModelLocLogit.initLocalLogit(n, args.k[n], self.arrays.BVTT, args.YX, args.vtt_grid)
             p.append(x[0])
             fval = fval + fval_x
         
@@ -62,7 +74,7 @@ class ModelLocLogit:
         p = np.array(p)
         fval = -fval
         
-        return p, fval, vtt_grid
+        return p, fval, args.vtt_grid
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):
@@ -77,7 +89,7 @@ class ModelLocLogit:
         # Search function
         coef_start = np.array([0., 0.])
         args = (y_local, xn, x0, weight)
-        results = minimize(ModelLocLogit.objectiveFunction, coef_start, args=args, method='Nelder-Mead')
+        results = minimize(ModelLocLogit.objectiveFunction, coef_start, args=args, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']

@@ -8,6 +8,7 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple
 from scipy.optimize import minimize
+from numdifftools import Hessian
 import numpy as np
 
 from py_np4vtt.data_format import ModelArrays
@@ -84,17 +85,17 @@ class ModelLogit:
         x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
 
         # Start minimization routine
-        results = minimize(ModelLogit.objectiveFunction, x0, args=argTuple, method='Nelder-Mead')
-
-        # TODO: check if we can rely in BFGS or my own BFGS
+        results = minimize(ModelLogit.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']
+        hess = Hessian(ModelLogit.objectiveFunction,method='forward')(x,args.sumYBVTT, args.BVTT, args.y_regress)
+        se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
         output = results['message']
 
-        return x, fval, exitflag, output
+        return x, se, fval, exitflag, output
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
