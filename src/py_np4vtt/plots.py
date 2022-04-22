@@ -45,17 +45,16 @@ def run_plot_ecdf(vtts: np.ndarray, probs: np.ndarray):
     data_x = np.append([0.0], vtts[1:])
     data_y = np.append([0.0], probs)
 
-    # TODO: formatting just a parameter or is
+    # The point (0,0) should be exactly on the bottom left, no margins
+    axs.margins(0.0)
+
+    # TODO: formatting just a parameter or...?
     format_points_ecdf = 'bo-'
     axs.plot(data_x, data_y, format_points_ecdf)
-
-    # TODO: The point (0,0) should be on the bottom left
 
     # Must be like this because it's a probabilty
     yticks_start = 0.0
     yticks_stop = 1.0
-
-    # TODO: just make that the labels are presented with rounder decimals
     yticks_num = 11
     axs.set_yticks(np.linspace(yticks_start, yticks_stop, yticks_num))
 
