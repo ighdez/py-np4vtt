@@ -130,3 +130,6 @@ data/shared/upstream copy.xlsx
 # Gradle:
 .idea/gradle.xml
 .idea/libraries
+
+
+**/.DS_Store
