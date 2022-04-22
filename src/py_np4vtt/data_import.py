@@ -11,7 +11,7 @@ from typing import List
 import pandas as pd
 import numpy as np
 
-from model.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic, ModelArrays, StudiedArrays
+from py_np4vtt.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic, ModelArrays, StudiedArrays
 
 
 class VarMappingException(Exception):

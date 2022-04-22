@@ -10,7 +10,7 @@ from typing import Tuple
 from scipy.optimize import minimize
 import numpy as np
 
-from model.data_format import ModelArrays
+from py_np4vtt.data_format import ModelArrays
 
 
 @dataclass

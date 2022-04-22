@@ -18,12 +18,12 @@ import pandas as pd
 from PyQt5.QtCore import QThread
 
 from gui.progress import EstimationWorker, EstimationProgress
-from model.data_format import StudyVarMapping, DescriptiveStatsBasic, ModelArrays
-from model.data_import import make_modelarrays, compute_descriptives
-from model.model_ann import ConfigANN
-from model.model_loclogit import ConfigLocLogit
-from model.model_logit import ConfigLogit
-from model.model_rouwendal import ConfigRouwendal
+from py_np4vtt.data_format import StudyVarMapping, DescriptiveStatsBasic, ModelArrays
+from py_np4vtt.data_import import make_modelarrays, compute_descriptives
+from py_np4vtt.model_ann import ConfigANN
+from py_np4vtt.model_loclogit import ConfigLocLogit
+from py_np4vtt.model_logit import ConfigLogit
+from py_np4vtt.model_rouwendal import ConfigRouwendal
 
 
 dataset_frame: Optional[pd.DataFrame] = None

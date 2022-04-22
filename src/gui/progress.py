@@ -15,10 +15,10 @@ from PyQt5.QtWidgets import QDialog
 
 from gui.formclasses.ui_progress import Ui_progressDialog
 
-from model.model_loclogit import ConfigLocLogit
-from model.model_logit import ConfigLogit
-from model.model_rouwendal import ConfigRouwendal
-from model.model_ann import ConfigANN
+from py_np4vtt.model_loclogit import ConfigLocLogit
+from py_np4vtt.model_logit import ConfigLogit
+from py_np4vtt.model_rouwendal import ConfigRouwendal
+from py_np4vtt.model_ann import ConfigANN
 
 
 @unique

@@ -8,9 +8,9 @@
 import pandas as pd
 from pathlib import Path
 
-from model.data_format import StudyVar
-from model.model_ann import ModelANN, ConfigANN
-from model.data_import import make_modelarrays, compute_descriptives
+from py_np4vtt.data_format import StudyVar
+from py_np4vtt.model_ann import ModelANN, ConfigANN
+from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
 
 def run_test():
@@ -25,7 +25,8 @@ def run_test():
     }
 
     curscript_dir = Path(__file__).resolve().parent
-    df = pd.read_table(curscript_dir.parent / 'data' / 'Norway09_data_v5.txt')
+    reporoot_dir = curscript_dir.parent.parent
+    df = pd.read_table(reporoot_dir / 'data' / 'Norway09_data_v5.txt')
 
     model_arrays = make_modelarrays(df, columnarrays)
 

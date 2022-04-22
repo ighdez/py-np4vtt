@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import minimize
 
-from model.data_format import ModelArrays
+from py_np4vtt.data_format import ModelArrays
 
 
 @dataclass

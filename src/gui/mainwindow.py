@@ -16,7 +16,7 @@ from gui.import_variables import ImportVariables
 from gui.modelconfig import ModelConfigLocLogit, ModelConfigLogit, ModelConfigRouwendal, ModelConfigANN
 from gui.progress import EstimationProgress, MethodType, EstimationWorker
 
-from model.data_format import DescriptiveStatsBasic
+from py_np4vtt.data_format import DescriptiveStatsBasic
 
 
 class MainWindow(QMainWindow):

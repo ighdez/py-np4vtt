@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QDialog, QLineEdit
 from gui.formclasses.ui_import_variables import Ui_variablesDialog
 
 import controller
-from model.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic
+from py_np4vtt.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic
 
 
 class ImportVariables(QDialog):

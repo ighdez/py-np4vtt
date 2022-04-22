@@ -8,11 +8,11 @@
 import pandas as pd
 from pathlib import Path
 
-from model.data_format import StudyVar
-from model.model_logit import ModelLogit, ConfigLogit
-from model.data_import import make_modelarrays, compute_descriptives
+from py_np4vtt.data_format import StudyVar
+from py_np4vtt.model_logit import ModelLogit, ConfigLogit
+from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
-from helpers import check_in_range
+from tests.test_helpers import check_in_range
 
 
 def run_test():
@@ -27,7 +27,8 @@ def run_test():
     }
 
     curscript_dir = Path(__file__).resolve().parent
-    df = pd.read_table(curscript_dir.parent / 'data' / 'Norway09_data_v5.txt')
+    reporoot_dir = curscript_dir.parent.parent
+    df = pd.read_table(reporoot_dir / 'data' / 'Norway09_data_v5.txt')
 
     model_arrays = make_modelarrays(df, columnarrays)
 
