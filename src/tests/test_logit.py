@@ -41,7 +41,7 @@ def run_test():
     # Step 4: Call model
     logit = ModelLogit(config, model_arrays)
     initialArgs, initialVal = logit.setupInitialArgs()
-    x, fval, exitflag, output = logit.run(initialArgs)
+    _, _, fval, _, _ = logit.run(initialArgs)
 
     # Check if the model reached the expected results
     f_initial_expected = 0.  # TODO: Grab actual value from MATLAB code

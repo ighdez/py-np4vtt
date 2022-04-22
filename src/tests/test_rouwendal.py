@@ -39,7 +39,7 @@ def run_test():
     # Step 4: Call model
     rouwendal = ModelRouwendal(config, model_arrays)
     initialArgs, initialVal = rouwendal.setupInitialArgs()
-    q_prob, q_est, par, fvtt, cumsum_fvtt, vtt_grid, fval, exitflag, output = rouwendal.run(initialArgs)
+    q_prob, q_est, q_se, par, se, fvtt, cumsum_fvtt, vtt_grid, fval, exitflag, output = rouwendal.run(initialArgs)
 
     # Check if the model reached the expected results
     f_initial_expected = 0.  # TODO: Grab actual value from MATLAB code
