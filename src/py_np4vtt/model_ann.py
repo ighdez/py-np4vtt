@@ -94,7 +94,7 @@ class ModelANN:
 
         return initialArgs
 
-    def run(self, args: InitialArgsANN, verbose=False) -> tuple[ndarray, ndarray, ndarray, ndarray]:
+    def run(self, args: InitialArgsANN, verbose=False):
         ll_list = []
         rho_sq = []
         y_predict = []
