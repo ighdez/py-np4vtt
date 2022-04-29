@@ -100,7 +100,7 @@ class ModelANN:
 
         return initialArgs
 
-    def run(self, args: InitialArgsANN, verbose=False):
+    def run(self, args: InitialArgsANN, verbose=True):
         ll_list = []
         rho_sq = []
         y_predict = []
