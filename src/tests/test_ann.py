@@ -12,6 +12,7 @@ from py_np4vtt.data_format import StudyVar
 from py_np4vtt.model_ann import ModelANN, ConfigANN
 from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
+from tests.test_helpers import check_in_range
 
 def run_test():
     # Step 1: read CSV file
@@ -39,7 +40,7 @@ def run_test():
     # Step 4: Call model
     ann = ModelANN(config, model_arrays)
     initialArgs = ann.setupInitialArgs()
-    ll, r2, clf, vtt = ann.run(initialArgs)
+    ll, r2, clf, vtt = ann.run(initialArgs,verbose=True)
 
     # Export to excel
     # Check if the model reached the expected results
@@ -49,19 +50,16 @@ def run_test():
     ll_mean = -ll.mean()
     r2_mean = r2.mean()
 
-    pass_ll = (ll_expected*0.85 < ll_mean < ll_expected*1.15)
-    pass_r2 = (r2_expected*0.9 < r2_mean < r2_expected*1.1)
-
     print('ANN checks:')
-    if not pass_ll:
+    if not check_in_range(ll_expected, ll_mean, margin_proportion=0.15):
         print('Log-likelihood: too far from expected. Expected={ll_expected}, Actual={ll_mean}')
     else:
-        print('Log-likelihood: OK')
+        print('Log-likelihood: PASS')
 
-    if not pass_r2:
+    if not check_in_range(r2_expected, r2_mean, margin_proportion=0.1):
         print('Rho-squared: too far from expected. Expected={r2_expected}, Actual={r2_mean}')
     else:
-        print('Rho-squared: OK')
+        print('Rho-squared: PASS')
 
 
 if __name__ == '__main__':

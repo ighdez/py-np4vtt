@@ -44,7 +44,7 @@ def run_test():
     _, _, fval, _, _ = logit.run(initialArgs)
 
     # Check if the model reached the expected results
-    f_initial_expected = 0.  # TODO: Grab actual value from MATLAB code
+    f_initial_expected = -2847.4605  # TODO: Grab actual value from MATLAB code
     f_final_expected = -2387.1224
 
     # TODO: check the initialValue

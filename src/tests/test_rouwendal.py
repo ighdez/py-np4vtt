@@ -12,6 +12,7 @@ from py_np4vtt.data_format import StudyVar
 from py_np4vtt.model_rouwendal import ConfigRouwendal, ModelRouwendal
 from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
+from tests.test_helpers import check_in_range
 
 def run_test():
     # Step 1: read CSV file
@@ -42,30 +43,26 @@ def run_test():
     q_prob, q_est, q_se, par, se, fvtt, cumsum_fvtt, vtt_grid, fval, exitflag, output = rouwendal.run(initialArgs)
 
     # Check if the model reached the expected results
-    f_initial_expected = 0.  # TODO: Grab actual value from MATLAB code
-    f_final_expected = 23335.63
+    f_initial_expected = -29058.2263  # TODO: Grab actual value from MATLAB code
+    f_final_expected = -23335.63
     q_prob_expected = 0.90069
-
-    pass_f_initial = (f_initial_expected*0.9 < initialVal < f_initial_expected*1.1)
-    pass_f_final = (fval < f_final_expected*1.1)
-    pass_q = (q_prob_expected*0.99 < q_prob < q_prob_expected*1.01)
 
     # TODO: check the initialValue
     print('Rouwendal method checks:')
-    if not pass_f_initial:
+    if not check_in_range(f_initial_expected, initialVal, margin_proportion=0.1):
         print('Initial F-value: too far from expected. Expected={f_initial_expected}, Actual={initialVal}')
     else:
-        print('Initial F-value: OK')
+        print('Initial F-value: PASS')
 
-    if not pass_f_final:
+    if not check_in_range(f_final_expected, fval, margin_proportion=0.1):
         print('Final F-value: too far from expected. Expected={f_final_expected}, Actual={fval}')
     else:
-        print('Final F-value: OK')
+        print('Final F-value: PASS')
 
-    if not pass_q:
+    if not check_in_range(q_prob_expected, q_prob, margin_proportion=0.01):
         print('Q Prob: too far from expected. Expected={q_prob_expected}, Actual={q_prob}')
     else:
-        print('Q Prob: OK')
+        print('Q Prob: PASS')
 
 
 if __name__ == '__main__':
