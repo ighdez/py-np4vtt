@@ -657,7 +657,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<=3.10"
-content-hash = "f7d5666f176968f3349bff4167a86af970065ec96fdf4c5c5cb47027bdf2da8e"
+content-hash = "e6a8f5efe1bfc314e884978781675446b9921a569b0ab617ec120f3e7c35a235"
 
 [metadata.files]
 algopy = [

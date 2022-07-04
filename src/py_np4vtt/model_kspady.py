@@ -7,7 +7,7 @@
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass
 import numpy as np
-from statsmodels.nonparametric.kernel_regression import KernelReg as kr
+from statsmodels.nonparametric.kernel_regression import KernelReg
 from py_np4vtt.data_format import ModelArrays
 
 @dataclass
@@ -52,7 +52,7 @@ class ModelKSpady:
         initialArgs = InitialArgsKSpady(
             vtt_grid = vtt_grid,
             k = k,
-            YX = self.arrays.Choice.T.flatten(),
+            YX = ~self.arrays.Choice.flatten(),
             BVTT = self.arrays.BVTT.flatten()
         )
 
@@ -61,9 +61,6 @@ class ModelKSpady:
     def run(self, args: InitialArgsKSpady):
 
         # Run the Klein-Spady estimator
-        krreg = kr(args.YX,args.BVTT,var_type='u',reg_type='lc',bw=[args.k],ukertype='gaussian')
-
-        # Return probability array and -ll
+        krreg = KernelReg(args.YX, args.BVTT, var_type='u', reg_type='lc', ukertype= 'gaussian', bw=[args.k])
         p = krreg.fit(args.vtt_grid)[0]
-        
         return p, args.vtt_grid
