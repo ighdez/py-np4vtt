@@ -1,15 +1,15 @@
 CHANGELOG
 
-[0.0.4]
+[0.1.4]
 - Added Klein-Spady estimator (see Fosgerau, 2006)
 
-[0.0.3]
+[0.1.3]
 - Examples in Jupyter notebook files
 
-[0.0.2]
+[0.1.2]
 - Methods were polished
 - Plot routines added but still not operative
 
 
-[0.0.1]
+[0.1.1]
 - Initial version, initial four methods are operative
