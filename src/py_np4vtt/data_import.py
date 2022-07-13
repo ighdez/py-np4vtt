@@ -79,31 +79,39 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
     time2 = study_arrays[StudyVar.Time2].to_numpy(copy=True)
     choice = study_arrays[StudyVar.ChosenAlt].to_numpy(copy=True)
 
-    # Identify times and costs
-    t1 = np.c_[time1,time2].max(axis=1)   # Higher time
-    t2 = np.c_[time1,time2].min(axis=1)   # Lower time
-    c1 = np.c_[cost1,cost2].min(axis=1)   # Lower cost
-    c2 = np.c_[cost1,cost2].max(axis=1)   # Higher cost
+    # Identify the cheap alternative
+    cheap_alt = np.zeros(study_arrays[StudyVar.Cost1].size, dtype=int)
+    cheap_alt[cost1 < cost2] = 1
+    cheap_alt[cost1 > cost2] = 2
 
+    # Identify the slow alternative
+    slow_alt = np.zeros(study_arrays[StudyVar.Time1].size, dtype=int)
+    slow_alt[time1 > time2] = 1
+    slow_alt[time1 < time2] = 2
 
-    # Identify expensive and slow alternative
-    cheap_alt = np.c_[cost1,cost2].argmin(axis=1) + 1
-    slow_alt = np.c_[time1,time2].argmax(axis=1) + 1
-
-    # Create scalars and ID variables
     id_all = study_arrays[StudyVar.Id]
     id_uniq = pd.unique(id_all)
     npar = id_uniq.size
     t = id_all.size / id_uniq.size
 
-    errorList = validate_modeldata(id_all, t, c1, c2, t1, t2, slow_alt, cheap_alt, choice)
+    errorList = validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_alt, choice)
+
     t_int = math.floor(t)
 
-    # BVTT
-    bvtt = (- (c1-c2)/(t1-t2)).reshape((npar,t_int))
+    # Reshape cost and time matrices, each row contains the entries for ONE participant
+    cost1 = np.reshape(cost1, (npar, t_int), order='C')
+    cost2 = np.reshape(cost2, (npar, t_int), order='C')
+    time1 = np.reshape(time1, (npar, t_int), order='C')
+    time2 = np.reshape(time2, (npar, t_int), order='C')
+
+    # Create BVTT matrix (floating point)
+    dtime = np.abs(time2 - time1)
+    dcost = np.abs(cost2 - cost1)
+    bvtt = dcost / dtime
 
     # FBE = "Fast But Expensive"
-    fbe_chosen = (choice != cheap_alt).reshape((npar, t_int))
+    fbe_chosen = choice != cheap_alt
+    fbe_chosen = np.reshape(fbe_chosen, (npar, t_int), order='C')
 
     # The number of times a DM accepted the 'FBE' alt. Sum accross columns
     accepts = np.sum(fbe_chosen.astype(int), 1)
