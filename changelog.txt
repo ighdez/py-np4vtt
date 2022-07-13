@@ -1,5 +1,8 @@
 CHANGELOG
 
+[0.1.5]
+- Added Random Valuation (RV) model
+
 [0.1.4]
 - Added Klein-Spady estimator (see Fosgerau, 2006)
 
