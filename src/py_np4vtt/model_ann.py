@@ -18,7 +18,6 @@ import numpy as np
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss
-from sklearn.preprocessing import StandardScaler
 
 # TODO: Check with Joao how safe is to import os
 
@@ -53,7 +52,6 @@ class InitialArgsANN:
     y_train: np.ndarray
     y_test: np.ndarray
     y_full: np.ndarray
-    scaled_BVTT: np.ndarray
     ann_topology: tuple
 
 class ModelANN:
@@ -62,9 +60,6 @@ class ModelANN:
         self.arrays = arrays
 
     def setupInitialArgs(self) -> InitialArgsANN:
-        
-        # Special preprocessing: scale the input variables
-        scaled_BVTT = StandardScaler().fit_transform(self.arrays.BVTT)
 
         # Initialise arrays for randomisation
         shuffle_index = np.zeros((self.cfg.shufflesPerRepeat,self.arrays.T+1))
@@ -78,7 +73,7 @@ class ModelANN:
                 shuffle_index[m,:] = np.hstack((rnd11,rnd11[np.random.randint(1,self.arrays.T-1)]))
             
             full_data_array[n,:,0] = self.arrays.Choice[n,shuffle_index.astype(int).flatten()]
-            full_data_array[n,:,1] = scaled_BVTT[n,shuffle_index.astype(int).flatten()]
+            full_data_array[n,:,1] = self.arrays.BVTT[n,shuffle_index.astype(int).flatten()]
 
         # Create input and output arrays for ANN
         full_data_array = np.hstack((np.reshape(full_data_array[:,:,0].T,(self.arrays.T+1,self.cfg.shufflesPerRepeat*self.arrays.NP),order='F').T,np.reshape(full_data_array[:,:,1].T,(self.arrays.T+1,self.cfg.shufflesPerRepeat*self.arrays.NP),order='F').T))
@@ -95,7 +90,6 @@ class ModelANN:
             y_train = y_train,
             y_test = y_test,
             y_full = t,
-            scaled_BVTT = scaled_BVTT,
             ann_topology = self.cfg.hiddenLayerNodes)
 
         return initialArgs
@@ -143,7 +137,7 @@ class ModelANN:
             
             # Simulate N-choice of each individual using the ANN
             vtt_grid = np.tile(np.linspace(0,1.5*args.X_full.max(),101),(self.arrays.Accepts.shape[0],1))
-            y_pred_N = ModelANN.simulateNChoice(self,clf,self.arrays.Choice,vtt_grid,args.scaled_BVTT,20)
+            y_pred_N = ModelANN.simulateNChoice(self,clf,self.arrays.Choice,vtt_grid,self.arrays.BVTT,20)
 
             # Recover individual VTTs, using simulation of choice probs
             VTT_mid = np.zeros(self.arrays.NP)
