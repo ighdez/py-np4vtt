@@ -1,5 +1,8 @@
 CHANGELOG
 
+[0.1.6]
+- Bugfixes (ANN scaling leading to problems on VTT recovery)
+
 [0.1.5]
 - Added Random Valuation (RV) model
 
