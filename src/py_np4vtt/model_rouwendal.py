@@ -55,7 +55,7 @@ class ModelRouwendal:
         # Create grid of support points
         vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
 
-        # Set vector of starting values of parameters to estimate
+        # Set vector of starting values of xameters to estimate
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
         x0 = np.hstack([q0, np.zeros(len(vtt_grid))])
 
@@ -89,23 +89,23 @@ class ModelRouwendal:
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
-        output = results['message']
 
         # Compute standard errors
         # TODO: standard errors
 
         # Get estimated probability of consistent choice
         q_prob = np.exp(x[0])/(1+np.exp(x[0]))
-        q_est = x[0]
-        q_se = np.sqrt((np.exp(q_est)/(1+np.exp(q_est)))**2)**2 * se[0]**2
+        q = x[0]
+        q_se = np.sqrt((np.exp(q)/(1+np.exp(q)))**2)**2 * se[0]**2
 
-        # Get estimated FVTT and parameters
-        par = x[1:]
-        fvtt = np.exp(par)/np.sum(np.exp(par))
-        cumsum_fvtt = np.cumsum(fvtt)
+        # Get estimated FVTT and xameters
+        x = x[1:]
+        se = se[1:]
+        fvtt = np.exp(x)/np.sum(np.exp(x))
+        ecdf = np.cumsum(fvtt)
 
         # Return output
-        return q_prob, q_est, q_se, par, se, fvtt, cumsum_fvtt, args.vtt_grid, fval, exitflag, output
+        return q, q_se, q_prob, x, se, args.vtt_grid, ecdf, fval, exitflag
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):

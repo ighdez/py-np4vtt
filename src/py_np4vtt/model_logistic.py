@@ -15,7 +15,7 @@ from py_np4vtt.data_format import ModelArrays
 
 
 @dataclass
-class ConfigLogit:
+class ConfigLogistic:
     mleIntercept: float
     mleParameter: float
     mleScale: float
@@ -42,18 +42,18 @@ class ConfigLogit:
 
 
 @dataclass
-class InitialArgsLogit:
+class InitialArgsLogistic:
     sumYBVTT: np.ndarray
     BVTT: np.ndarray
     y_regress: np.ndarray
 
 
-class ModelLogit:
-    def __init__(self, cfg: ConfigLogit, arrays: ModelArrays):
+class ModelLogistic:
+    def __init__(self, cfg: ConfigLogistic, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
 
-    def setupInitialArgs(self) -> Tuple[InitialArgsLogit, float]:
+    def setupInitialArgs(self) -> Tuple[InitialArgsLogistic, float]:
         # Use passed seed if desired
         if self.cfg.seed:
             np.random.seed(self.cfg.seed)
@@ -67,29 +67,29 @@ class ModelLogit:
         # Set vector of starting values of parameters to estimate
         x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
 
-        initialArgs = InitialArgsLogit(
+        initialArgs = InitialArgsLogistic(
             sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1),
             BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1),
             y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1),
         )
 
-        initialVal = -ModelLogit.objectiveFunction(x0, initialArgs.sumYBVTT, initialArgs.BVTT, initialArgs.y_regress)
+        initialVal = -ModelLogistic.objectiveFunction(x0, initialArgs.sumYBVTT, initialArgs.BVTT, initialArgs.y_regress)
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
         return initialArgs, initialVal
 
-    def run(self, args: InitialArgsLogit):
+    def run(self, args: InitialArgsLogistic):
         # Starting arguments and values for minimizer
         argTuple = (args.sumYBVTT, args.BVTT, args.y_regress)
         x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
 
         # Start minimization routine
-        results = minimize(ModelLogit.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = minimize(ModelLogistic.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelLogit.objectiveFunction,method='forward')(x,args.sumYBVTT, args.BVTT, args.y_regress)
+        hess = Hessian(ModelLogistic.objectiveFunction,method='forward')(x,args.sumYBVTT, args.BVTT, args.y_regress)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']

@@ -78,9 +78,8 @@ class ModelRV:
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
-        output = results['message']
 
-        return x, se, fval, exitflag, output
+        return x, se, fval, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):

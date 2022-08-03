@@ -62,5 +62,5 @@ class ModelKSpady:
 
         # Run the Klein-Spady estimator
         krreg = KernelReg(args.YX, args.BVTT, var_type='u', reg_type='lc', ukertype= 'gaussian', bw=[args.k])
-        p = krreg.fit(args.vtt_grid)[0]
-        return p, args.vtt_grid
+        ecdf = krreg.fit(args.vtt_grid)[0]
+        return ecdf, args.vtt_grid
