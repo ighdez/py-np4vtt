@@ -81,9 +81,9 @@ class ModelRV:
 
         # Compute VTT in the range of the BVTT values
         x_pred = np.linspace(args.BVTT.min(),args.BVTT.max(),100)
-        vtt = np.exp(x[0]*x_pred)/(np.exp(x[0]*x_pred)+np.exp(x[0]*x[1]))
+        ecdf = np.exp(x[0]*x_pred)/(np.exp(x[0]*x_pred)+np.exp(x[0]*x[1]))
 
-        return x, se, fval, vtt, exitflag
+        return x, se, fval, ecdf, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):

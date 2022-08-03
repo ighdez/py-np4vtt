@@ -95,9 +95,9 @@ class ModelLogistic:
         exitflag = results['status']
 
         # Compute VTT
-        vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
+        ecdf = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
 
-        return x, se, fval, vtt, exitflag
+        return x, se, fval, ecdf, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
