@@ -105,7 +105,7 @@ class ModelRouwendal:
         ecdf = np.cumsum(fvtt)
 
         # Return output
-        return q, q_se, q_prob, x, se, args.vtt_grid, ecdf, fval, exitflag
+        return q, q_se, q_prob, x, se, ecdf, args.vtt_grid, fval, exitflag
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):
