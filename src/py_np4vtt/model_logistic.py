@@ -93,9 +93,11 @@ class ModelLogistic:
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
-        output = results['message']
 
-        return x, se, fval, exitflag, output
+        # Compute VTT
+        vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
+
+        return x, se, fval, vtt, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
