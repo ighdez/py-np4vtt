@@ -9,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 
 from py_np4vtt.data_format import StudyVar
-from py_np4vtt.model_logit import ModelLogit, ConfigLogit
+from py_np4vtt.model_logistic import ModelLogistic, ConfigLogistic
 from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
 from tests.test_helpers import check_in_range
@@ -36,12 +36,12 @@ def run_test():
     _descriptives = compute_descriptives(model_arrays)
 
     # Step 3: Make config
-    config = ConfigLogit(mleIntercept=1, mleParameter=0.1, mleScale=1, mleMaxIterations=10000, seed=12345)
+    config = ConfigLogistic(mleIntercept=1, mleParameter=0.1, mleScale=1, mleMaxIterations=10000, seed=12345)
 
     # Step 4: Call model
-    logit = ModelLogit(config, model_arrays)
-    initialArgs, initialVal = logit.setupInitialArgs()
-    _, _, fval, _, _ = logit.run(initialArgs)
+    logistic = ModelLogistic(config, model_arrays)
+    initialArgs, initialVal = logistic.setupInitialArgs()
+    _, _, fval, _, _ = logistic.run(initialArgs)
 
     # Check if the model reached the expected results
     f_initial_expected = -2847.4605  # TODO: Grab actual value from MATLAB code

@@ -149,7 +149,11 @@ class ModelANN:
 
             VTT_mid_list.append(VTT_mid)
 
-        return np.array(ll_list), np.array(rho_sq), np.array(y_predict), np.array(VTT_mid_list)
+            ll_list = np.array(ll_list)
+            r2_list = np.array(rho_sq)
+            vtt_list = np.array(VTT_mid_list)
+
+        return ll_list, r2_list, vtt_list
 
     @staticmethod
     def simulateNChoice(self,clf,y,vtt_grid,X,R):

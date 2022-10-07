@@ -78,9 +78,12 @@ class ModelRV:
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
-        output = results['message']
 
-        return x, se, fval, exitflag, output
+        # Compute VTT in the range of the BVTT values
+        x_pred = np.linspace(args.BVTT.min(),args.BVTT.max(),100)
+        ecdf = np.exp(x[0]*x_pred)/(np.exp(x[0]*x_pred)+np.exp(x[0]*x[1]))
+
+        return x, se, fval, ecdf, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
