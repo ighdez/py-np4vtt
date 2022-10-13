@@ -121,9 +121,10 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
 def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
     fbe_units = arrs.Choice.astype(int)
 
-    chosenBVTT = fbe_units * arrs.BVTT
+    chosenBVTT = (fbe_units * arrs.BVTT)
+
     # noinspection PyTypeChecker
-    chosenBVTT_mean: int = np.mean(chosenBVTT)
+    chosenBVTT_mean: int = np.sum(chosenBVTT)/np.sum(fbe_units)
 
     chosen_fastexp = np.sum(fbe_units, 1)
     nt_cheapslow = np.count_nonzero(chosen_fastexp == 0)
