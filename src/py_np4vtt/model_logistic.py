@@ -40,67 +40,56 @@ class ConfigLogistic:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
-
-@dataclass
-class InitialArgsLogistic:
-    sumYBVTT: np.ndarray
-    BVTT: np.ndarray
-    y_regress: np.ndarray
-
-
 class ModelLogistic:
     def __init__(self, cfg: ConfigLogistic, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
 
-    def setupInitialArgs(self) -> Tuple[InitialArgsLogistic, float]:
         # Use passed seed if desired
         if self.cfg.seed:
             np.random.seed(self.cfg.seed)
 
         # Prepare data
         i_obs_y = \
-            np.tile(np.random.randint(1, self.arrays.T, size=(self.arrays.NP, 1)), (1, self.arrays.T)) \
-            == np.tile(np.arange(1, self.arrays.T + 1), (self.arrays.NP, 1))
+            np.tile(np.random.randint(1, self.arrays.T, size=(self.arrays.NP, 1)), (1, self.arrays.T)) == \
+            np.tile(np.arange(1, self.arrays.T + 1), (self.arrays.NP, 1))
+        
         i_obs_x = (i_obs_y == 0)
 
         # Set vector of starting values of parameters to estimate
-        x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
+        self.x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
 
-        initialArgs = InitialArgsLogistic(
-            sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1),
-            BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1),
-            y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1),
-        )
+        self.BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1)
+        self.sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1)
+        self.y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1)
 
-        initialVal = -ModelLogistic.objectiveFunction(x0, initialArgs.sumYBVTT, initialArgs.BVTT, initialArgs.y_regress)
+    def initialVal(self):
+        ll = -ModelLogistic.objectiveFunction(self.x0, self.sumYBVTT, self.BVTT, self.y_regress)
 
-        # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
+        return ll
 
-        return initialArgs, initialVal
-
-    def run(self, args: InitialArgsLogistic):
+    def run(self):
         # Starting arguments and values for minimizer
-        argTuple = (args.sumYBVTT, args.BVTT, args.y_regress)
-        x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
+        argTuple = (self.sumYBVTT, self.BVTT, self.y_regress)
 
         # Start minimization routine
-        results = minimize(ModelLogistic.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = minimize(ModelLogistic.objectiveFunction, self.x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelLogistic.objectiveFunction,method='forward')(x,args.sumYBVTT, args.BVTT, args.y_regress)
+        hess = Hessian(ModelLogistic.objectiveFunction,method='forward')(x,self.sumYBVTT, self.BVTT, self.y_regress)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
 
         # Compute VTT
-        ecdf = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
+        vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
 
-        return x, se, fval, ecdf, exitflag
+        return x, se, fval, vtt, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
+        
         # Separate parameters: x is the estimated (multi-dimensional) parameter
         scale, intercept, parameter = x
 
@@ -111,7 +100,8 @@ class ModelLogistic:
 
         # Create choice probability and Log-likelihood
         p = np.exp(V1) / (np.exp(V1) + np.exp(V2))
-        ll = - np.sum(np.log(p * (y_regress == 0) + (1 - p) * (y_regress == 1)))
-
+        ll = np.log(p * (y_regress == 0) + (1 - p) * (y_regress == 1))
+        ll[~np.isfinite(ll)] = 0
+        
         # Return choice probability
-        return ll
+        return -np.sum(ll)
