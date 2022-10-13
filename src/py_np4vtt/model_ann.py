@@ -43,23 +43,10 @@ class ConfigANN:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
-
-@dataclass
-class InitialArgsANN:
-    X_train: np.ndarray
-    X_test: np.ndarray
-    X_full: np.ndarray
-    y_train: np.ndarray
-    y_test: np.ndarray
-    y_full: np.ndarray
-    ann_topology: tuple
-
 class ModelANN:
     def __init__(self, cfg: ConfigANN, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
-
-    def setupInitialArgs(self) -> InitialArgsANN:
 
         # Initialise arrays for randomisation
         shuffle_index = np.zeros((self.cfg.shufflesPerRepeat,self.arrays.T+1))
@@ -83,18 +70,14 @@ class ModelANN:
         # Separate in train and test
         X_train, X_test, y_train, y_test = train_test_split(x,t,test_size = 0.15)
 
-        initialArgs = InitialArgsANN(
-            X_train = X_train,
-            X_test = X_test,
-            X_full = x,
-            y_train = y_train,
-            y_test = y_test,
-            y_full = t,
-            ann_topology = self.cfg.hiddenLayerNodes)
+        self.X_train = X_train
+        self.X_test = X_test
+        self.X_full = x
+        self.y_train = y_train
+        self.y_test = y_test
+        self.y_full = t
 
-        return initialArgs
-
-    def run(self, args: InitialArgsANN, verbose=True):
+    def run(self, verbose=True):
         ll_list = []
         rho_sq = []
         y_predict = []
@@ -106,7 +89,7 @@ class ModelANN:
                 print('Rep ' + str(r+1) + ': ',end='',flush=True)
 
             clf = MLPClassifier(
-                hidden_layer_sizes=args.ann_topology,
+                hidden_layer_sizes=self.cfg.hiddenLayerNodes,
                 activation='tanh',
                 tol=1e-4,
                 alpha=0.,
@@ -114,21 +97,21 @@ class ModelANN:
                 max_iter=1000,
                 early_stopping=True,
                 validation_fraction=0.1275,
-                verbose=False).fit(args.X_train,args.y_train)
+                verbose=False).fit(self.X_train,self.y_train)
 
             # Predict in test sample
-            y_predict_train = clf.predict_proba(args.X_train)
-            y_predict_test = clf.predict_proba(args.X_test)
+            y_predict_train = clf.predict_proba(self.X_train)
+            y_predict_test = clf.predict_proba(self.X_test)
 
             y_predict.append(y_predict_test)
 
-            # # Get train and test loss
-            train_loss = log_loss(args.y_train,y_predict_train)
-            test_loss = log_loss(args.y_test,y_predict_test)
+            # Get train and test loss
+            train_loss = log_loss(self.y_train,y_predict_train)
+            test_loss = log_loss(self.y_test,y_predict_test)
 
-            # # Compute log-likelihood and Rho-sq in full sample
-            ll = -len(args.y_train)*train_loss - len(args.y_test)*test_loss
-            r2 = 1 - (ll/(np.log(0.5)*len(args.y_full)))
+            # Compute log-likelihood and Rho-sq in full sample
+            ll = -len(self.y_train)*train_loss - len(self.y_test)*test_loss
+            r2 = 1 - (ll/(np.log(0.5)*len(self.y_full)))
             ll_list.append(ll)
             rho_sq.append(r2)
 
@@ -136,7 +119,7 @@ class ModelANN:
                 print('CE (train): ' + str(round(train_loss,4)) + ' / CE (test): ' + str(round(test_loss,4)) + ' / LL: ' + str(round(ll,2)) + ' / Rho-sq: ' + str(round(r2,2)))
             
             # Simulate N-choice of each individual using the ANN
-            vtt_grid = np.tile(np.linspace(0,1.5*args.X_full.max(),101),(self.arrays.Accepts.shape[0],1))
+            vtt_grid = np.tile(np.linspace(0,1.5*self.X_full.max(),101),(self.arrays.Accepts.shape[0],1))
             y_pred_N = ModelANN.simulateNChoice(self,clf,self.arrays.Choice,vtt_grid,self.arrays.BVTT,20)
 
             # Recover individual VTTs, using simulation of choice probs
@@ -149,9 +132,9 @@ class ModelANN:
 
             VTT_mid_list.append(VTT_mid)
 
-            ll_list = np.array(ll_list)
-            r2_list = np.array(rho_sq)
-            vtt_list = np.array(VTT_mid_list)
+        ll_list = np.array(ll_list)
+        r2_list = np.array(rho_sq)
+        vtt_list = np.array(VTT_mid_list)
 
         return ll_list, r2_list, vtt_list
 
