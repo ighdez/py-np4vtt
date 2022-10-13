@@ -29,38 +29,24 @@ class ConfigKSpady:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
-@dataclass
-class InitialArgsKSpady:
-    vtt_grid: np.ndarray
-    BVTT: np.ndarray
-    k: np.ndarray
-    YX: np.ndarray
-
 class ModelKSpady:
     def __init__(self, params: ConfigKSpady, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
 
-    def setupInitialArgs(self) -> InitialArgsKSpady:
-
         # Create grid of support points
-        vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
+        self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
         # Compute the kernel width
-        k = np.diff(vtt_grid).mean()
+        self.k = np.diff(self.vtt_grid).mean()
 
-        initialArgs = InitialArgsKSpady(
-            vtt_grid = vtt_grid,
-            k = k,
-            YX = ~self.arrays.Choice.flatten(),
-            BVTT = self.arrays.BVTT.flatten()
-        )
-
-        return initialArgs
-
-    def run(self, args: InitialArgsKSpady):
+        # Create the choice indicator
+        self.YX = ~self.arrays.Choice.flatten()
+        self.BVTT = self.arrays.BVTT.flatten()
+        
+    def run(self):
 
         # Run the Klein-Spady estimator
-        krreg = KernelReg(args.YX, args.BVTT, var_type='u', reg_type='lc', ukertype= 'gaussian', bw=[args.k])
-        ecdf = krreg.fit(args.vtt_grid)[0]
-        return ecdf, args.vtt_grid
+        krreg = KernelReg(self.YX, self.BVTT, var_type='u', reg_type='lc', ukertype= 'gaussian', bw=[self.k])
+        ecdf = krreg.fit(self.vtt_grid)[0]
+        return ecdf, self.vtt_grid
