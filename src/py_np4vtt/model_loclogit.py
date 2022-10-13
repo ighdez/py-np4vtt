@@ -11,7 +11,6 @@ from scipy.optimize import minimize
 
 from py_np4vtt.data_format import ModelArrays
 
-
 @dataclass
 class ConfigLocLogit:
     minimum: float
@@ -31,42 +30,28 @@ class ConfigLocLogit:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
-@dataclass
-class InitialArgsLocLogit:
-    vtt_grid: np.ndarray
-    k: np.ndarray
-    YX: np.ndarray
-
 class ModelLocLogit:
     def __init__(self, params: ConfigLocLogit, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
 
-    def setupInitialArgs(self) -> InitialArgsLocLogit:
-
         # Create grid of support points
-        vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
+        self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
         # Compute the kernel width
-        k = np.r_[vtt_grid, 0.] - np.r_[0., vtt_grid]
-        k = k[:-2]
-        k[0] = k[1].copy()
+        self.k = np.r_[self.vtt_grid, 0.] - np.r_[0., self.vtt_grid]
+        self.k = self.k[:-2]
+        self.k[0] = self.k[1].copy()
 
-        initialArgs = InitialArgsLocLogit(
-            vtt_grid = vtt_grid.copy(),
-            k = k.copy(),
-            YX = self.arrays.Choice.T.flatten()
-        )
+        self.YX = self.arrays.Choice.T.flatten()
 
-        return initialArgs
-
-    def run(self, args: InitialArgsLocLogit):
+    def run(self):
 
         # Perform a weighted logit for each support point
         p = []
         fval = 0.
-        for n in range(len(args.vtt_grid)-1):
-            x, fval_x = ModelLocLogit.initLocalLogit(n, args.k[n], self.arrays.BVTT, args.YX, args.vtt_grid)
+        for n in range(len(self.vtt_grid)-1):
+            x, fval_x = ModelLocLogit.initLocalLogit(n, self.k[n], self.arrays.BVTT, self.YX, self.vtt_grid)
             p.append(x[0])
             fval = fval + fval_x
         
@@ -74,7 +59,7 @@ class ModelLocLogit:
         ecdf = np.array(p)
         fval = -fval
         
-        return ecdf, args.vtt_grid, fval
+        return ecdf, self.vtt_grid, fval
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):
