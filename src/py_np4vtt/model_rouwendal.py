@@ -37,61 +37,40 @@ class ConfigRouwendal:
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
-@dataclass
-class InitialArgsRouwendal:
-    NP: int
-    T: int
-    BVTT: np.ndarray
-    Choice: np.ndarray
-    vtt_grid: np.ndarray
-
-
 class ModelRouwendal:
     def __init__(self, cfg: ConfigRouwendal, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
 
-    def setupInitialArgs(self) -> Tuple[InitialArgsRouwendal, float]:
         # Create grid of support points
-        vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
+        self.vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
 
         # Set vector of starting values of xameters to estimate
-        q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
-        x0 = np.hstack([q0, np.zeros(len(vtt_grid))])
-
-        initialArgs = InitialArgsRouwendal(
-            NP=self.arrays.NP,
-            T=self.arrays.T,
-            BVTT=self.arrays.BVTT,
-            Choice=self.arrays.Choice,
-            vtt_grid=vtt_grid)
-
-        initialVal = -ModelRouwendal.objectiveFunction(x0, initialArgs.NP, initialArgs.T, initialArgs.BVTT,
-                                                      initialArgs.Choice, initialArgs.vtt_grid)
+        self.q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
+        self.x0 = np.hstack([self.q0, np.zeros(len(self.vtt_grid))])
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
-        return initialArgs, initialVal
+    def initialVal(self):
+        ll = -ModelRouwendal.objectiveFunction(self.x0, self.arrays.NP, self.arrays.T, self.arrays.BVTT,
+                                                      self.arrays.Choice, self.vtt_grid)
 
-    def run(self, args: InitialArgsRouwendal):
+        return ll
+
+    def run(self):
 
         # Starting values
-        q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
-        x0 = np.hstack([q0, np.zeros(len(args.vtt_grid))])
-        argTuple = (args.NP, args.T, args.BVTT, args.Choice, args.vtt_grid)
+        argTuple = (self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
 
         # Start optimization
-        results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = minimize(ModelRouwendal.objectiveFunction, self.x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,args.NP, args.T, args.BVTT, args.Choice, args.vtt_grid)
+        hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         fval = -results['fun']
         exitflag = results['status']
-
-        # Compute standard errors
-        # TODO: standard errors
 
         # Get estimated probability of consistent choice
         q_prob = np.exp(x[0])/(1+np.exp(x[0]))
@@ -105,7 +84,7 @@ class ModelRouwendal:
         ecdf = np.cumsum(fvtt)
 
         # Return output
-        return q, q_se, q_prob, x, se, ecdf, args.vtt_grid, fval, exitflag
+        return q, q_se, q_prob, x, se, ecdf, self.vtt_grid, fval, exitflag
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):
