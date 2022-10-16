@@ -86,7 +86,7 @@ class ModelLogistic:
         # Compute VTT
         vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
 
-        return x, se, init_ll ,ll, vtt, exitflag
+        return x, se, vtt, init_ll ,ll, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):

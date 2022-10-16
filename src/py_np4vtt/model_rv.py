@@ -16,74 +16,67 @@ from py_np4vtt.data_format import ModelArrays
 
 @dataclass
 class ConfigRV:
-    mleScale: float
-    mleVTT: float
+    minimum: float
+    maximum: float
+    supportPoints: int
+    startScale: float
+    startVTT: float
 
-    mleMaxIterations: int
+    maxIterations: int
 
     def validate(self):
         # Create errormessage list
         errorList = []
 
-        if not self.mleScale > 0:
+        if not self.maximum > self.minimum:
+            errorList.append('Max must be greater than minimum.')
+
+        if not self.supportPoints > 0:
+            errorList.append('No. of support points must be greater than zero.')
+
+        if not self.startScale > 0:
             errorList.append('Scale starting value must be positive.')
 
-        if not self.mleMaxIterations > 0:
+        if not self.maxIterations > 0:
             errorList.append('Max iterations must be greater than zero.')
 
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
-
-
-@dataclass
-class InitialArgsRV:
-    BVTT: np.ndarray
-    y_regress: np.ndarray
-    x0: np.ndarray
-
 
 class ModelRV:
     def __init__(self, cfg: ConfigRV, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
 
-    def setupInitialArgs(self) -> Tuple[InitialArgsRV, float]:
+        self.vtt_grid = np.linspace(self.cfg.minimum,self.cfg.maximum,self.cfg.supportPoints)
+
+    def run(self):
 
         # Set vector of starting values of parameters to estimate
-        x0 = np.array([self.cfg.mleScale, self.cfg.mleVTT])
+        x0 = np.array([self.cfg.startScale, self.cfg.startVTT])
 
-        initialArgs = InitialArgsRV(
-            BVTT=self.arrays.BVTT.flatten(),
-            y_regress=self.arrays.Choice.flatten(),
-            x0 = np.array([self.cfg.mleScale, self.cfg.mleVTT])
-        )
+        BVTT=self.arrays.BVTT.flatten()
+        y_regress=self.arrays.Choice.flatten()
 
-        initialVal = -ModelRV.objectiveFunction(x0, initialArgs.BVTT, initialArgs.y_regress)
+        init_ll = -ModelRV.objectiveFunction(x0, BVTT, y_regress)
 
-        # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
-
-        return initialArgs, initialVal
-
-    def run(self, args: InitialArgsRV):
         # Starting arguments and values for minimizer
-        argTuple = (args.BVTT, args.y_regress)
-        x0 = args.x0
+        argTuple = (BVTT, y_regress)
 
         # Start minimization routine
-        results = minimize(ModelRV.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = minimize(ModelRV.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6,'maxiter': self.cfg.maxIterations})
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelRV.objectiveFunction,method='forward')(x, args.BVTT, args.y_regress)
+        hess = Hessian(ModelRV.objectiveFunction,method='forward')(x, BVTT, y_regress)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
-        fval = -results['fun']
+        ll = -results['fun']
         exitflag = results['status']
 
         # Compute VTT in the range of the BVTT values
-        x_pred = np.linspace(args.BVTT.min(),args.BVTT.max(),100)
-        ecdf = np.exp(x[0]*x_pred)/(np.exp(x[0]*x_pred)+np.exp(x[0]*x[1]))
+        p = np.exp(x[0]*self.vtt_grid)/(np.exp(x[0]*self.vtt_grid)+np.exp(x[0]*x[1]))
 
-        return x, se, fval, ecdf, exitflag
+        return x, se, p, init_ll, ll, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
@@ -94,9 +87,12 @@ class ModelRV:
         V1 = scale * BVTT
         V2 = scale * VTT
 
+        dV = V2 - V1
+        dV[dV>700] = 700
+
         # Create choice probability and Log-likelihood
-        p = np.exp(V1) / (np.exp(V1) + np.exp(V2))
-        ll = - np.sum(np.log(p * (y_regress == 0) + (1 - p) * (y_regress == 1)))
+        p = 1 / (1 + np.exp(-dV))
+        ll = - np.sum(np.log(p * (y_regress == 1) + (1 - p) * (y_regress == 0)))
 
         # Return choice probability
         return ll
