@@ -38,28 +38,28 @@ class ModelLocLogit:
         # Create grid of support points
         self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
-        # Compute the kernel width
-        self.k = np.r_[self.vtt_grid, 0.] - np.r_[0., self.vtt_grid]
-        self.k = self.k[:-2]
-        self.k[0] = self.k[1].copy()
-
-        self.YX = self.arrays.Choice.T.flatten()
-
     def run(self):
+
+        # Compute the kernel width
+        k = np.r_[self.vtt_grid, 0.] - np.r_[0., self.vtt_grid]
+        k = k[:-2]
+        k[0] = k[1].copy()
+
+        YX = self.arrays.Choice.T.flatten()
 
         # Perform a weighted logit for each support point
         p = []
         fval = 0.
         for n in range(len(self.vtt_grid)-1):
-            x, fval_x = ModelLocLogit.initLocalLogit(n, self.k[n], self.arrays.BVTT, self.YX, self.vtt_grid)
+            x, fval_x = ModelLocLogit.initLocalLogit(n, k[n], self.arrays.BVTT, YX, self.vtt_grid)
             p.append(x[0])
             fval = fval + fval_x
         
         # Return probability array and -ll
-        ecdf = np.array(p)
+        p = np.array(p)
         fval = -fval
         
-        return ecdf, self.vtt_grid, fval
+        return p, fval
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):
