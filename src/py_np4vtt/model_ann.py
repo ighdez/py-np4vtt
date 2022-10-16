@@ -68,7 +68,7 @@ class ModelANN:
         x = full_data_array[:,1:]
 
         # Separate in train and test
-        X_train, X_test, y_train, y_test = train_test_split(x,t,test_size = 0.15)
+        X_train, X_test, y_train, y_test = train_test_split(x,t,test_size = 0.15,random_state=self.cfg.seed)
 
         self.X_train = X_train
         self.X_test = X_test
@@ -97,7 +97,7 @@ class ModelANN:
                 max_iter=1000,
                 early_stopping=True,
                 validation_fraction=0.1275,
-                verbose=False).fit(self.X_train,self.y_train)
+                verbose=False,random_state=self.cfg.seed).fit(self.X_train,self.y_train)
 
             # Predict in test sample
             y_predict_train = clf.predict_proba(self.X_train)
