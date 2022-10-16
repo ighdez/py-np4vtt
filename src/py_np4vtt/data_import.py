@@ -135,7 +135,7 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
         T=arrs.T,
         NT_FastExp=nt_fastext,
         NT_CheapSlow=nt_cheapslow,
-        ChosenBVTT_Mean=chosenBVTT_mean,
-        BVTT_min=np.amin(arrs.BVTT),
-        BVTT_max=np.amax(arrs.BVTT),
+        ChosenBVTT_Mean=np.round(chosenBVTT_mean,4),
+        BVTT_min=np.round(np.amin(arrs.BVTT),4),
+        BVTT_max=np.round(np.amax(arrs.BVTT),4),
     )

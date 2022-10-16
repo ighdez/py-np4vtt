@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.stats import norm
 from py_np4vtt.data_format import ModelArrays
-from scipy.optimize import minimize
+
 @dataclass
 class ConfigLConstant:
     minimum: float
@@ -41,29 +41,33 @@ class ModelLConstant:
         # Create grid of support points
         self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
-        # Compute the kernel width
-        self.k = self.params.kernelWidth
-
-        # Create the choice indicator
-        self.YX = ~self.arrays.Choice.flatten()
-        self.BVTT = self.arrays.BVTT.flatten()
-        
     def run(self):
         
-        ecdf = ModelLConstant.nadaraya_watson(self.vtt_grid,self.YX,self.BVTT,self.k)
+        mean_f = ModelLConstant.nadaraya_watson(self.vtt_grid,~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
 
-        return ecdf, self.vtt_grid
+        return mean_f
 
     # Nadaraya-Watson estimator with gaussian kernel
     @staticmethod
     def nadaraya_watson(x,Y,X,h):
+        
+        g = np.empty(shape=x.shape)
 
-        # Compute the difference between x and X for each point in x
-        xi_minus_X = (x[:,np.newaxis] - X)/h
+        for i in range(g.shape[0]):
+            xi_minus_X = (x[i] - X[X<=x[i]])/h
+            g_num = np.sum(norm.pdf(xi_minus_X)*Y[X<=x[i]])
+            g_den = np.sum(norm.pdf(xi_minus_X))
 
-        # Compute the numerator and denominator of g(x)
-        g_num = np.sum(norm.pdf(xi_minus_X)*Y[np.newaxis,:],axis=1)
-        g_den = np.sum(norm.pdf(xi_minus_X),axis=1)
+            g[i] = g_num/g_den
 
-        # Return g(x)
-        return g_num/g_den
+        return g
+
+        # # Compute the difference between x and X for each point in x
+        # xi_minus_X = (x[:,np.newaxis] - X)/h
+
+        # # Compute the numerator and denominator of g(x)
+        # g_num = np.sum(norm.pdf(xi_minus_X)*Y[np.newaxis,:],axis=1)
+        # g_den = np.sum(norm.pdf(xi_minus_X),axis=1)
+
+        # # Return g(x)
+        # return g_num/g_den
