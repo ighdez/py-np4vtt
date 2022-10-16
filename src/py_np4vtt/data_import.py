@@ -11,7 +11,7 @@ from typing import List
 import pandas as pd
 import numpy as np
 
-from py_np4vtt.data_format import Vars, VarsMapping, DescriptiveStatsBasic, ModelArrays, StudiedArrays
+from py_np4vtt.data_format import Vars, VarsMapping, DescriptiveStatsBasic, ModelArrays, Arrays
 
 
 class VarMappingException(Exception):
@@ -23,7 +23,7 @@ class VarMappingException(Exception):
         return f"The study variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
 
 
-def make_studiedarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> StudiedArrays:
+def make_arrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> Arrays:
     studied_arrays = {}
 
     for v in Vars:
@@ -70,7 +70,7 @@ def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_al
 
 
 def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> ModelArrays:
-    study_arrays = make_studiedarrays(dataset_frame, dataset_varmapping)
+    study_arrays = make_arrays(dataset_frame, dataset_varmapping)
 
     # Copy to avoid changing the original data imported
     cost1 = study_arrays[Vars.Cost1].to_numpy(copy=True)
