@@ -57,9 +57,9 @@ class ModelLocLogit:
         
         # Return probability array and -ll
         p = np.array(p)
-        fval = -fval
+        ll = -fval
         
-        return p, fval
+        return p, ll
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):

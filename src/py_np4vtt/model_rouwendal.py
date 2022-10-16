@@ -10,9 +10,10 @@ from typing import Tuple
 from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
-
+import warnings
 from py_np4vtt.data_format import ModelArrays
 
+warnings.filterwarnings('ignore')
 
 @dataclass
 class ConfigRouwendal:
@@ -45,31 +46,29 @@ class ModelRouwendal:
         # Create grid of support points
         self.vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
 
+    def run(self):
+
         # Set vector of starting values of xameters to estimate
-        self.q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
-        self.x0 = np.hstack([self.q0, np.zeros(len(self.vtt_grid))])
+        q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
+        x0 = np.hstack([q0, np.zeros(len(self.vtt_grid))])
 
-        # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
-
-    def initialVal(self):
-        ll = -ModelRouwendal.objectiveFunction(self.x0, self.arrays.NP, self.arrays.T, self.arrays.BVTT,
+        # Initial value of the log-likelihood function
+        init_ll = -ModelRouwendal.objectiveFunction(x0, self.arrays.NP, self.arrays.T, self.arrays.BVTT,
                                                       self.arrays.Choice, self.vtt_grid)
 
-        return ll
-
-    def run(self):
+        # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
         # Starting values
         argTuple = (self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
 
         # Start optimization
-        results = minimize(ModelRouwendal.objectiveFunction, self.x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
 
         # Collect results
         x = results['x']
         hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
-        fval = -results['fun']
+        ll = -results['fun']
         exitflag = results['status']
 
         # Get estimated probability of consistent choice
@@ -84,7 +83,7 @@ class ModelRouwendal:
         ecdf = np.cumsum(fvtt)
 
         # Return output
-        return q, q_se, q_prob, x, se, ecdf, self.vtt_grid, fval, exitflag
+        return q, q_se, q_prob, x, se, ecdf, self.vtt_grid, init_ll, ll, exitflag
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):
