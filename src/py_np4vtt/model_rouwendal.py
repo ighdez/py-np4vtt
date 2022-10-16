@@ -73,8 +73,8 @@ class ModelRouwendal:
 
         # Get estimated probability of consistent choice
         q_prob = np.exp(x[0])/(1+np.exp(x[0]))
-        q = x[0]
-        q_se = np.sqrt((np.exp(q)/(1+np.exp(q)))**2)**2 * se[0]**2
+        q_est = x[0]
+        q_se = np.sqrt((np.exp(q_est)/(1+np.exp(q_est)))**2)**2 * se[0]**2
 
         # Get estimated FVTT and xameters
         x = x[1:]
@@ -83,7 +83,7 @@ class ModelRouwendal:
         ecdf = np.cumsum(fvtt)
 
         # Return output
-        return q, q_se, q_prob, x, se, ecdf, init_ll, ll, exitflag
+        return q_est, q_se, q_prob, x, se, ecdf, init_ll, ll, exitflag
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):
