@@ -11,7 +11,7 @@ from scipy.stats import norm
 from py_np4vtt.data_format import ModelArrays
 from scipy.optimize import minimize
 @dataclass
-class ConfigKSpady:
+class ConfigLConstant:
     minimum: float
     maximum: float
     supportPoints: int
@@ -27,11 +27,14 @@ class ConfigKSpady:
         if not self.supportPoints > 0:
             errorList.append('No. of support points must be greater than zero.')
 
+        if not self.kernelWidth > 0:
+            errorList.append('Kernel width must be greater than zero.')
+
         # Whoever calls this validator knows that empty errorList means validator success
         return errorList
 
-class ModelKSpady:
-    def __init__(self, params: ConfigKSpady, arrays: ModelArrays):
+class ModelLConstant:
+    def __init__(self, params: ConfigLConstant, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
 
@@ -39,7 +42,7 @@ class ModelKSpady:
         self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
         # Compute the kernel width
-        self.k = self.params.kernelWidth#np.diff(self.vtt_grid).mean()
+        self.k = self.params.kernelWidth
 
         # Create the choice indicator
         self.YX = ~self.arrays.Choice.flatten()
@@ -47,65 +50,9 @@ class ModelKSpady:
         
     def run(self):
         
-        ecdf = ModelKSpady.nadaraya_watson(self.vtt_grid,self.YX,self.BVTT,self.k)
-        # res = []
-        # startv = 0.
-
-        # # Run the Klein-Spady estimator
-        # res = minimize(ModelKSpady.klein_spady_ll,startv,args = (self.YX,self.BVTT,self.k),method='L-BFGS-B',options={'gtol': 1e-6})
-
-        # coef = res['x'].flatten()
-        # ecdf = ModelKSpady.nw_pred(coef,self.vtt_grid,self.YX,self.BVTT,self.k)
+        ecdf = ModelLConstant.nadaraya_watson(self.vtt_grid,self.YX,self.BVTT,self.k)
 
         return ecdf, self.vtt_grid
-
-    # # Klein-Spady log-likelihood
-    # @staticmethod
-    # def klein_spady_ll(coef,Y,X,h):
-        
-    #     gamma = coef
-        
-    #     g = ModelKSpady.loo_nw(gamma,Y, X, h)
-
-    #     ll = np.log((Y==1)*g + (Y==0)*(1-g))
-
-    #     return -np.sum(ll)
-
-    # # leave-one-out NW
-    # @staticmethod
-    # def loo_nw(x,Y,X,h):
-        
-    #     g = np.empty(shape=X.shape)
-    #     for i in range(X.shape[0]):
-    #         X_i = X[i]
-    #         X_minus_i = np.delete(X,i)
-    #         Y_minus_i = np.delete(Y,i)
-
-    #         # Compute the difference between x and X for each point in x
-    #         xi_minus_X = ((X_i - X_minus_i)*x)/h
-
-    #         # Compute the numerator and denominator of g(x)
-    #         g_num = np.sum(norm.pdf(xi_minus_X)*Y_minus_i)
-    #         g_den = np.sum(norm.pdf(xi_minus_X))
-
-    #         g[i] = g_num/g_den
-
-    #     # Return g(x)
-    #     return g
-
-    # # leave-one-out NW
-    # @staticmethod
-    # def nw_pred(gamma,x,Y,X,h):
-        
-    #     # Compute the difference between x and X for each point in x
-    #     xi_minus_X = ((x[:,np.newaxis] - X)*gamma)/h
-
-    #     # Compute the numerator and denominator of g(x)
-    #     g_num = np.sum(norm.pdf(xi_minus_X)*Y[np.newaxis,:],axis=1)
-    #     g_den = np.sum(norm.pdf(xi_minus_X),axis=1)
-
-    #     # Return g(x)
-    #     return g_num/g_den
 
     # Nadaraya-Watson estimator with gaussian kernel
     @staticmethod
