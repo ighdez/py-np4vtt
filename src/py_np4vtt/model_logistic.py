@@ -10,17 +10,19 @@ from typing import Optional, Tuple
 from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
+import warnings
 
 from py_np4vtt.data_format import ModelArrays
 
+warnings.filterwarnings('ignore')
 
 @dataclass
 class ConfigLogistic:
-    mleIntercept: float
-    mleParameter: float
-    mleScale: float
+    startIntercept: float
+    startParameter: float
+    startScale: float
 
-    mleMaxIterations: int
+    maxIterations: int
 
     seed: Optional[int]
 
@@ -28,10 +30,10 @@ class ConfigLogistic:
         # Create errormessage list
         errorList = []
 
-        if not self.mleScale > 0:
+        if not self.startScale > 0:
             errorList.append('Scale starting value must be positive.')
 
-        if not self.mleMaxIterations > 0:
+        if not self.maxIterations > 0:
             errorList.append('Max iterations must be greater than zero.')
 
         if not self.seed >= 0:
@@ -45,6 +47,8 @@ class ModelLogistic:
         self.cfg = cfg
         self.arrays = arrays
 
+    def run(self):
+
         # Use passed seed if desired
         if self.cfg.seed:
             np.random.seed(self.cfg.seed)
@@ -57,35 +61,32 @@ class ModelLogistic:
         i_obs_x = (i_obs_y == 0)
 
         # Set vector of starting values of parameters to estimate
-        self.x0 = np.array([self.cfg.mleScale, self.cfg.mleIntercept, self.cfg.mleParameter])
+        x0 = np.array([self.cfg.startScale, self.cfg.startIntercept, self.cfg.startParameter])
 
-        self.BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1)
-        self.sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1)
-        self.y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1)
+        BVTT=np.sum(i_obs_y * self.arrays.BVTT, axis=1)
+        sumYBVTT=np.sum(i_obs_x * self.arrays.BVTT * self.arrays.Choice, axis=1)
+        y_regress=np.sum(self.arrays.Choice * i_obs_y, axis=1)
 
-    def initialVal(self):
-        ll = -ModelLogistic.objectiveFunction(self.x0, self.sumYBVTT, self.BVTT, self.y_regress)
+        # LL at the start values
+        init_ll = -ModelLogistic.objectiveFunction(x0, sumYBVTT, BVTT, y_regress)
 
-        return ll
-
-    def run(self):
         # Starting arguments and values for minimizer
-        argTuple = (self.sumYBVTT, self.BVTT, self.y_regress)
-
+        argTuple = (sumYBVTT, BVTT, y_regress)
+        
         # Start minimization routine
-        results = minimize(ModelLogistic.objectiveFunction, self.x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = minimize(ModelLogistic.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6,'maxiter': self.cfg.maxIterations})
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelLogistic.objectiveFunction,method='forward')(x,self.sumYBVTT, self.BVTT, self.y_regress)
+        hess = Hessian(ModelLogistic.objectiveFunction,method='forward')(x,sumYBVTT, BVTT, y_regress)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
-        fval = -results['fun']
+        ll = -results['fun']
         exitflag = results['status']
 
         # Compute VTT
         vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
 
-        return x, se, fval, vtt, exitflag
+        return x, se, init_ll ,ll, vtt, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
