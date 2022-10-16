@@ -11,11 +11,11 @@ from typing import List
 import pandas as pd
 import numpy as np
 
-from py_np4vtt.data_format import StudyVar, StudyVarMapping, DescriptiveStatsBasic, ModelArrays, StudiedArrays
+from py_np4vtt.data_format import Vars, VarsMapping, DescriptiveStatsBasic, ModelArrays, StudiedArrays
 
 
 class VarMappingException(Exception):
-    def __init__(self, missingVar: StudyVar, colName: str):
+    def __init__(self, missingVar: Vars, colName: str):
         self.missingVar = missingVar
         self.colName = colName
 
@@ -23,10 +23,10 @@ class VarMappingException(Exception):
         return f"The study variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
 
 
-def make_studiedarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> StudiedArrays:
+def make_studiedarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> StudiedArrays:
     studied_arrays = {}
 
-    for v in StudyVar:
+    for v in Vars:
         colName = dataset_varmapping[v]
         arr = dataset_frame.get(colName)
         if arr is None:
@@ -69,15 +69,15 @@ def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_al
     return errorList
 
 
-def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMapping) -> ModelArrays:
+def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> ModelArrays:
     study_arrays = make_studiedarrays(dataset_frame, dataset_varmapping)
 
     # Copy to avoid changing the original data imported
-    cost1 = study_arrays[StudyVar.Cost1].to_numpy(copy=True)
-    cost2 = study_arrays[StudyVar.Cost2].to_numpy(copy=True)
-    time1 = study_arrays[StudyVar.Time1].to_numpy(copy=True)
-    time2 = study_arrays[StudyVar.Time2].to_numpy(copy=True)
-    choice = study_arrays[StudyVar.ChosenAlt].to_numpy(copy=True)
+    cost1 = study_arrays[Vars.Cost1].to_numpy(copy=True)
+    cost2 = study_arrays[Vars.Cost2].to_numpy(copy=True)
+    time1 = study_arrays[Vars.Time1].to_numpy(copy=True)
+    time2 = study_arrays[Vars.Time2].to_numpy(copy=True)
+    choice = study_arrays[Vars.ChosenAlt].to_numpy(copy=True)
 
     # Identify times and costs
     t1 = np.c_[time1,time2].max(axis=1)   # Higher time
@@ -91,7 +91,7 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: StudyVarMa
     slow_alt = np.c_[time1,time2].argmax(axis=1) + 1
 
     # Create scalars and ID variables
-    id_all = study_arrays[StudyVar.Id]
+    id_all = study_arrays[Vars.Id]
     id_uniq = pd.unique(id_all)
     npar = id_uniq.size
     t = id_all.size / id_uniq.size

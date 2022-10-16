@@ -8,7 +8,7 @@
 import pandas as pd
 from pathlib import Path
 
-from py_np4vtt.data_format import StudyVar
+from py_np4vtt.data_format import Vars
 from py_np4vtt.model_ann import ModelANN, ConfigANN
 from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
@@ -17,12 +17,12 @@ from tests.test_helpers import check_in_range
 def run_test():
     # Step 1: read CSV file
     columnarrays = {
-        StudyVar.Id: 'RespID',
-        StudyVar.ChosenAlt: 'Chosen',
-        StudyVar.Cost1: 'CostL',
-        StudyVar.Cost2: 'CostR',
-        StudyVar.Time1: 'TimeL',
-        StudyVar.Time2: 'TimeR',
+        Vars.Id: 'RespID',
+        Vars.ChosenAlt: 'Chosen',
+        Vars.Cost1: 'CostL',
+        Vars.Cost2: 'CostR',
+        Vars.Time1: 'TimeL',
+        Vars.Time2: 'TimeR',
     }
 
     curscript_dir = Path(__file__).resolve().parent

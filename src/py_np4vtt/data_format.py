@@ -15,7 +15,7 @@ import numpy as np
 import numpy.typing as npt
 
 
-class StudyVar(Enum):
+class Vars(Enum):
     Id = auto()
     ChosenAlt = auto()
     Cost1 = auto()
@@ -24,9 +24,9 @@ class StudyVar(Enum):
     Time2 = auto()
 
 
-StudyVarMapping = Dict[StudyVar, str]
+VarsMapping = Dict[Vars, str]
 
-StudiedArrays = Dict[StudyVar, pd.Series]
+Arrays = Dict[Vars, pd.Series]
 
 
 @dataclass
