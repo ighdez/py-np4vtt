@@ -99,8 +99,11 @@ class ModelLogistic:
         V1 = scale * BVTT
         V2 = scale * VTT
 
+        dV = V1 - V2
+        dV[dV>700] = 700
+
         # Create choice probability and Log-likelihood
-        p = np.exp(V1) / (np.exp(V1) + np.exp(V2))
+        p = 1 / (1 + np.exp(-dV))
         ll = np.log(p * (y_regress == 0) + (1 - p) * (y_regress == 1))
         ll[~np.isfinite(ll)] = 0
         
