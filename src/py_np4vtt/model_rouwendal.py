@@ -12,6 +12,7 @@ from numdifftools import Hessian
 import numpy as np
 import warnings
 from py_np4vtt.data_format import ModelArrays
+from py_np4vtt.utils import vtt_midpoints, predicted_vtt
 
 warnings.filterwarnings('ignore')
 
@@ -45,6 +46,9 @@ class ModelRouwendal:
 
         # Create grid of support points
         self.vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
+
+        # Compute the midpoints of the VTT grid
+        self.vtt_mid = vtt_midpoints(self.vtt_grid)
 
     def run(self):
 
@@ -80,10 +84,13 @@ class ModelRouwendal:
         x = x[1:]
         se = se[1:]
         fvtt = np.exp(x)/np.sum(np.exp(x))
-        ecdf = np.cumsum(fvtt)
+        p = np.cumsum(fvtt)
+
+        # Compute the predicted VTT at the midpoints
+        vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
 
         # Return output
-        return q_est, q_se, q_prob, x, se, ecdf, init_ll, ll, exitflag
+        return q_est, q_se, q_prob, x, se, p, vtt, init_ll, ll, exitflag
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):

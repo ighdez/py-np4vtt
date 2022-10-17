@@ -9,6 +9,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.stats import norm
 from py_np4vtt.data_format import ModelArrays
+from py_np4vtt.utils import predicted_vtt
 
 @dataclass
 class ConfigLConstant:
@@ -45,7 +46,10 @@ class ModelLConstant:
         
         mean_f = ModelLConstant.nadaraya_watson(self.vtt_grid,~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
 
-        return mean_f
+        # Create counts per point of the VTT grid
+        vtt = predicted_vtt(mean_f,self.vtt_grid,self.arrays.NP)
+
+        return mean_f, vtt
 
     # Nadaraya-Watson estimator with gaussian kernel
     @staticmethod

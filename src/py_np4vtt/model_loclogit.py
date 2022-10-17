@@ -8,8 +8,8 @@
 from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import minimize
-
 from py_np4vtt.data_format import ModelArrays
+from py_np4vtt.utils import vtt_midpoints, predicted_vtt
 
 @dataclass
 class ConfigLocLogit:
@@ -38,6 +38,9 @@ class ModelLocLogit:
         # Create grid of support points
         self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
+        # Compute the midpoints of the VTT grid
+        self.vtt_mid = vtt_midpoints(self.vtt_grid)
+
     def run(self):
 
         # Compute the kernel width
@@ -58,8 +61,11 @@ class ModelLocLogit:
         # Return probability array and -ll
         p = np.array(p)
         ll = -fval
-        
-        return p, ll
+
+        # Compute the predicted VTT at the midpoints
+        vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
+
+        return p, vtt, ll
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):
