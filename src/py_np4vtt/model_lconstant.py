@@ -42,6 +42,15 @@ class ModelLConstant:
         # Create grid of support points
         self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
+        # Compute distance between points at each support point
+        dist = self.vtt_grid[1] - self.vtt_grid[0]
+
+        # Print message of the support points
+        print("Created a VTT grid of " + str(self.params.supportPoints) + \
+            " points between " + str(self.params.minimum) + " and " + str(self.params.maximum) + ".")
+
+        print("Distance between points of the VTT grid is " + str(dist))
+
     def run(self):
         
         mean_f = ModelLConstant.nadaraya_watson(self.vtt_grid,~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)

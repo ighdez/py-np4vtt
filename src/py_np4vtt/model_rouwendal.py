@@ -50,6 +50,15 @@ class ModelRouwendal:
         # Compute the midpoints of the VTT grid
         self.vtt_mid = vtt_midpoints(self.vtt_grid)
 
+        # Compute distance between points at each support point
+        dist = self.vtt_grid[1] - self.vtt_grid[0]
+
+        # Print message of the support points
+        print("Created a VTT grid of " + str(self.params.supportPoints) + \
+            " points between " + str(self.params.minimum) + " and " + str(self.params.maximum) + ".")
+
+        print("Distance between points of the VTT grid is " + str(dist))
+        
     def run(self):
 
         # Set vector of starting values of xameters to estimate
