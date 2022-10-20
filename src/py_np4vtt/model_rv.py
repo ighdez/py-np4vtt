@@ -73,10 +73,7 @@ class ModelRV:
         ll = -results['fun']
         exitflag = results['status']
 
-        # Compute VTT in the range of the BVTT values
-        p = np.exp(x[0]*self.vtt_grid)/(np.exp(x[0]*self.vtt_grid)+np.exp(x[0]*x[1]))
-
-        return x, se, p, init_ll, ll, exitflag
+        return x, se, init_ll, ll, exitflag
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
