@@ -18,9 +18,9 @@ warnings.filterwarnings('ignore')
 
 @dataclass
 class ConfigLogistic:
+    startScale: float
     startIntercept: float
     startParameter: float
-    startScale: float
 
     maxIterations: int
 
