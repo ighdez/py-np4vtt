@@ -15,7 +15,6 @@ scipy = "^1.7.1"
 scikit-learn = "^1.0.2"
 matplotlib = "^3.5.1"
 numdifftools = "^0.9.40"
-statsmodels = "^0.13.2"
 
 [tool.poetry.dev-dependencies]
 ipykernel = "^6.15.0"
