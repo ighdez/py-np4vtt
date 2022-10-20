@@ -16,9 +16,6 @@ from py_np4vtt.data_format import ModelArrays
 
 @dataclass
 class ConfigRV:
-    minimum: float
-    maximum: float
-    supportPoints: int
     startScale: float
     startVTT: float
 
@@ -27,12 +24,6 @@ class ConfigRV:
     def validate(self):
         # Create errormessage list
         errorList = []
-
-        if not self.maximum > self.minimum:
-            errorList.append('Max must be greater than minimum.')
-
-        if not self.supportPoints > 0:
-            errorList.append('No. of support points must be greater than zero.')
 
         if not self.startScale > 0:
             errorList.append('Scale starting value must be positive.')
@@ -47,8 +38,6 @@ class ModelRV:
     def __init__(self, cfg: ConfigRV, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
-
-        self.vtt_grid = np.linspace(self.cfg.minimum,self.cfg.maximum,self.cfg.supportPoints)
 
     def run(self):
 
