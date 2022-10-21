@@ -54,8 +54,8 @@ class ModelRouwendal:
         dist = self.vtt_grid[1] - self.vtt_grid[0]
 
         # Print message of the support points
-        print("Created a VTT grid of " + str(self.params.supportPoints) + \
-            " points between " + str(self.params.minimum) + " and " + str(self.params.maximum) + ".")
+        print("Created a VTT grid of " + str(self.cfg.supportPoints) + \
+            " points between " + str(self.cfg.minimum) + " and " + str(self.cfg.maximum) + ".")
 
         print("Distance between points of the VTT grid is " + str(dist))
         

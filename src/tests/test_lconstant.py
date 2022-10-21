@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 from py_np4vtt.data_format import Vars
-from py_np4vtt.model_kspady import ModelKSpady, ConfigKSpady
+from py_np4vtt.model_lconstant import ModelLConstant, ConfigLConstant
 from py_np4vtt.data_import import make_modelarrays, compute_descriptives
 
 def run_test():
@@ -25,7 +25,7 @@ def run_test():
 
     curscript_dir = Path(__file__).resolve().parent
     reporoot_dir = curscript_dir.parent.parent
-    df = pd.read_table(reporoot_dir / 'data' / 'Norway09_data_v5.txt')
+    df = pd.read_table(reporoot_dir / 'data' / 'Norway2009VTT_demodata.txt')
 
     model_arrays = make_modelarrays(df, columnarrays)
 

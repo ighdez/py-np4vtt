@@ -27,7 +27,7 @@ def run_test():
 
     curscript_dir = Path(__file__).resolve().parent
     reporoot_dir = curscript_dir.parent.parent
-    df = pd.read_table(reporoot_dir / 'data' / 'Norway09_data_v5.txt')
+    df = pd.read_table(reporoot_dir / 'data' / 'Norway2009VTT_demodata.txt')
 
     model_arrays = make_modelarrays(df, columnarrays)
 
