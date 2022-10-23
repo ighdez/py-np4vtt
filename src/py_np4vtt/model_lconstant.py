@@ -5,6 +5,8 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+""""Modules to configure and estimate a local constant model."""
+
 from dataclasses import dataclass
 import numpy as np
 from scipy.stats import norm
@@ -13,6 +15,28 @@ from py_np4vtt.utils import predicted_vtt
 
 @dataclass
 class ConfigLConstant:
+    """Configuration class of the local constant model.
+    
+    This class stores the configuration parameters of a local constant model 
+    and performs integrity checks before being passed to the model object.
+    
+    Parameters
+    ----------
+    
+    minimum : float
+        Minimum value of the VTT grid
+        
+    maximum : float
+        Maximum value of the VTT grid
+        
+    supportPoints : int
+        Number of support points of the VTT grid. The VTT grid will contain
+        `(supportPoints-1)` intervals. Must be greater than zero
+        
+    kernelWidth : float
+        Kernel width for the Nadaraya-Watson estimator. Must be greater than
+        zero.
+    """
     minimum: float
     maximum: float
     supportPoints: int
@@ -35,6 +59,36 @@ class ConfigLConstant:
         return errorList
 
 class ModelLConstant:
+    """Local constant model.
+    
+    This is the model class that prepares the data and estimates a local
+    constant model [1]_.
+    
+    Parameters
+    -----------
+    params : ConfigLConstant
+        A configuration class of a local constant model.
+        
+    arrays : ModelArrays
+        Model arrays created with `make_modelarrays`
+        
+    Attributes
+    ----------
+    vtt_grid : numpy.ndarray
+        The VTT grid created with the specifications of `ConfigLConstant`
+    
+    Methods
+    -------
+    run():
+        Estimates the local constant model.
+    
+    References
+    ----------
+    [1] Fosgerau, Mogens. "Investigating the distribution of the value of
+    travel time savings." Transportation Research Part B: Methodological
+    40.8 (2006): 688-707.
+    """
+
     def __init__(self, params: ConfigLConstant, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
@@ -52,7 +106,20 @@ class ModelLConstant:
         print("Distance between points of the VTT grid is " + str(dist))
 
     def run(self):
+        """Estimates the local constant model.
         
+        Parameters
+        ----------
+        None.
+
+        Returns
+        -------
+        mean_f : numpy.ndarray
+            The estimated choice probability at each point of the VTT grid
+        vtt : numpy.ndarray
+            The estimated VTT per respondent, based in the estimated
+            probabilities (`mean_f`) and the sample.
+        """
         mean_f = ModelLConstant.nadaraya_watson(self.vtt_grid,~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
 
         # Create counts per point of the VTT grid
