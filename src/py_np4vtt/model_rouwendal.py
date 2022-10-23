@@ -18,6 +18,25 @@ warnings.filterwarnings('ignore')
 
 @dataclass
 class ConfigRouwendal:
+    """Configuration class of the Rouwendal's model.
+    
+    This class stores the configuration parameters of a Rouwendal's model 
+    and performs integrity checks before being passed to the model object.
+    
+    Parameters
+    ----------
+    
+    minimum : float
+        Minimum value of the VTT grid
+    maximum : float
+        Maximum value of the VTT grid
+    supportPoints : int
+        Number of support points of the VTT grid. The VTT grid will contain
+        `(supportPoints-1)` intervals. Must be greater than zero
+    startQ : float
+        Starting value of the probability of consistent choice. Must be
+        between zero and one.
+    """
     minimum: float
     maximum: float
     supportPoints: int
@@ -40,6 +59,37 @@ class ConfigRouwendal:
         return errorList
 
 class ModelRouwendal:
+    """Rouwendal's model.
+    
+    This is the model class that prepares the data and estimates 
+    the Rouwendal's model [1]_.
+    
+    Parameters
+    -----------
+    params : ConfigRouwendal
+        A configuration class of a Rouwendal's model.
+    arrays : ModelArrays
+        Model arrays created with `make_modelarrays`
+        
+    Attributes
+    ----------
+    vtt_grid : numpy.ndarray
+        The VTT grid created with the specifications of `ConfigRouwendal`.
+    vtt_mid : numpy.ndarray
+        The mid points of the VTT grid.
+
+    Methods
+    -------
+    run():
+        Estimates the Rouwendal's model.
+    
+    References
+    ----------
+    [1] Rouwendal, Jan, et al. "The information content of a stated choice 
+    experiment: A new method and its application to the value of a 
+    statistical life." Transportation research part B: methodological 44.1 
+    (2010): 136-151.
+    """
     def __init__(self, cfg: ConfigRouwendal, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
@@ -60,7 +110,35 @@ class ModelRouwendal:
         print("Distance between points of the VTT grid is " + str(dist))
         
     def run(self):
+        """Estimates the Rouwendal's model.
+        
+        Parameters
+        ----------
+        None.
 
+        Returns
+        -------
+        q_prob : float
+            The estimated probability of consistent choice.
+        q_est : float
+            The estimated parameter that generates the probability of consistent choice.
+        q_se : float
+            The standard error of the parameter of consistent choice.
+        x : numpy.ndarray
+            The estimated parameters at each point of the VTT grid.
+        se : numpy.ndarray
+            The standard errors of x.
+        p : numpy.ndarray
+            The cumulative probability of the VTT at each support point.
+        vtt : numpy.ndarray
+            The estimated VTT for each respondent, based in the estimated probabilities and the VTT grid.
+        init_ll : float
+            Value of log-likelihood function in the initial value of startQ. Starting values of support point parameters are equal to zero.
+        ll : float
+            Value of the likelihood function in the optimum.
+        exitflag : int
+            Exit flag of the optimisation routine. If `exitflag=0`, the optimisation succeeded. Otherwise, check the configuration parameters.
+        """
         # Set vector of starting values of xameters to estimate
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
         x0 = np.hstack([q0, np.zeros(len(self.vtt_grid))])

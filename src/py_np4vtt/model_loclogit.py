@@ -23,10 +23,8 @@ class ConfigLocLogit:
     
     minimum : float
         Minimum value of the VTT grid
-        
     maximum : float
         Maximum value of the VTT grid
-        
     supportPoints : int
         Number of support points of the VTT grid. The VTT grid will contain
         `(supportPoints-1)` intervals. Must be greater than zero
@@ -58,7 +56,6 @@ class ModelLocLogit:
     -----------
     params : ConfigLocLogit
         A configuration class of a local logit model.
-        
     arrays : ModelArrays
         Model arrays created with `make_modelarrays`
         
@@ -66,7 +63,6 @@ class ModelLocLogit:
     ----------
     vtt_grid : numpy.ndarray
         The VTT grid created with the specifications of `ConfigLocLogit`.
-    
     vtt_mid : numpy.ndarray
         The mid points of the VTT grid.
 

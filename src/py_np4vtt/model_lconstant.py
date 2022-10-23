@@ -25,14 +25,11 @@ class ConfigLConstant:
     
     minimum : float
         Minimum value of the VTT grid
-        
     maximum : float
         Maximum value of the VTT grid
-        
     supportPoints : int
         Number of support points of the VTT grid. The VTT grid will contain 
         `(supportPoints-1)` intervals. Must be greater than zero
-        
     kernelWidth : float
         Kernel width for the Nadaraya-Watson estimator. Must be greater than 
         zero.
@@ -68,7 +65,6 @@ class ModelLConstant:
     -----------
     params : ConfigLConstant
         A configuration class of a local constant model.
-        
     arrays : ModelArrays
         Model arrays created with `make_modelarrays`
         
