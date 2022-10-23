@@ -5,6 +5,8 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""Methods to create model arrays and generate descriptive statistics."""
+
 import math
 from typing import List
 
@@ -20,7 +22,7 @@ class VarMappingException(Exception):
         self.colName = colName
 
     def __str__(self):
-        return f"The study variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
+        return f"The variable '{self.missingVar}' (mapped to column '{self.colName}') is missing from the dataset"
 
 
 def make_arrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> Arrays:
@@ -70,6 +72,31 @@ def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_al
 
 
 def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> ModelArrays:
+    """Create model arrays.
+
+    This function takes a Pandas `DataFrame` and a dictionary that contains
+    the mapping between the necessary variables and the variable names in
+    the dataset.
+
+    Parameters
+    ----------
+    dataset_frame : pandas.DataFrame
+        A Pandas `DataFrame` that contains the dataset.
+
+    dataset_varmapping: Dict[Vars,str]
+        A dictionary file that maps the necessary variables required by NP4VTT
+        with the variable names in the dataset. Each key is of the format
+        `Vars.variablename` where `variablename` is one of the required
+        variables (see the documentation of `py_np4vtt.data_format.Vars` for
+        more details about the required variables). Each value is a string
+        that contains the name of the variable corresponding to the necessary
+        variable as it appears in `dataset_frame`.
+
+    Returns
+    -------
+    ModelArrays
+        An object containing the model arrays used by the nonparametric models.
+    """
     study_arrays = make_arrays(dataset_frame, dataset_varmapping)
 
     # Copy to avoid changing the original data imported
@@ -119,6 +146,24 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMappin
 
 
 def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
+    """Compute descriptive statistics
+    
+    It takes the object that contains the model arrays and returns a set of 
+    relevant descriptive statistics regarding respondents, their choices and
+    about the BVTT.
+    
+    Parameters
+    ----------
+    arrs : ModelArrays
+        The model arrays object
+
+    Returns
+    -------
+
+    DescriptiveStatsBasic
+        An object that contains the relevant descriptive statistics. Can be
+        accessed using `print()`.
+    """
     fbe_units = arrs.Choice.astype(int)
 
     chosenBVTT = (fbe_units * arrs.BVTT)
