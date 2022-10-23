@@ -23,6 +23,26 @@ from sklearn.metrics import log_loss
 
 @dataclass
 class ConfigANN:
+    """Configuration class of the ANN-based model.
+    
+    This class stores the configuration parameters of an ANN-based model 
+    and performs integrity checks before being passed to the model object.
+    
+    Parameters
+    ----------
+    
+    hiddenLayerNodes : List[int]
+        Topology of the ANN. The length of `hiddenLayerNodes` is the number 
+        of hidden layers, and each element of the list is the number of 
+        nodes of the corresponding layer.
+    trainingRepeats : int
+        Number of estimation repeats of the ANN.
+    shufflesPerRepeat : int
+        Random shuffles of the data per repetition.
+
+    seed : Optional[int]
+        Random seed for the shuffling and estimation process.
+    """
     hiddenLayerNodes: List[int]
 
     trainingRepeats: int
@@ -44,6 +64,44 @@ class ConfigANN:
         return errorList
 
 class ModelANN:
+    """ANN model.
+    
+    This is the model class that prepares the data and estimates 
+    the ANN-based model [1]_.
+    
+    Parameters
+    -----------
+    params : ConfigANN
+        A configuration class of an ANN-based model.
+    arrays : ModelArrays
+        Model arrays created with `make_modelarrays`
+        
+    Attributes
+    ----------
+    X_train : numpy.ndarray
+        Input data for training (estimation), i.e. the BVTT of each choice set and the T-1'th choices
+    X_test : numpy.ndarray
+        Input data for testing (prediction)
+    X_full : numpy.ndarray
+        Full input data
+    y_train : numpy.ndarray
+        Output data for training, i.e. the T'th choice
+    y_test : numpy.ndarray
+        Output data for testing
+    y_full : numpy.ndarray
+        Full output data
+
+    Methods
+    -------
+    run():
+        Estimates the ANN-based model.
+    
+    References
+    ----------
+    [1] van Cranenburgh, Sander, and Marco Kouwenhoven. "An artificial neural 
+    network based method to uncover the value-of-travel-time distribution." 
+    Transportation 48.5 (2021): 2545-2583.
+    """
     def __init__(self, cfg: ConfigANN, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
@@ -78,6 +136,21 @@ class ModelANN:
         self.y_full = t
 
     def run(self, verbose=True):
+        """Estimates the Rouwendal's model.
+        
+        Parameters
+        ----------
+        None.
+
+        Returns
+        -------
+        ll_list : np.ndarray
+            The log-likelihood values per repetition.
+        r2_list : np.ndarray
+            The Rho-squared values per repetition.
+        vtt_list : np.ndarray
+            The estimated VTT per respondent and repetition.
+        """
         ll_list = []
         rho_sq = []
         y_predict = []
