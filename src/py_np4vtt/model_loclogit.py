@@ -13,6 +13,24 @@ from py_np4vtt.utils import vtt_midpoints, predicted_vtt
 
 @dataclass
 class ConfigLocLogit:
+    """Configuration class of the local logit model.
+    
+    This class stores the configuration parameters of a local logit model 
+    and performs integrity checks before being passed to the model object.
+    
+    Parameters
+    ----------
+    
+    minimum : float
+        Minimum value of the VTT grid
+        
+    maximum : float
+        Maximum value of the VTT grid
+        
+    supportPoints : int
+        Number of support points of the VTT grid. The VTT grid will contain
+        `(supportPoints-1)` intervals. Must be greater than zero
+    """
     minimum: float
     maximum: float
     supportPoints: int
@@ -31,6 +49,38 @@ class ConfigLocLogit:
         return errorList
 
 class ModelLocLogit:
+    """Local logit model.
+    
+    This is the model class that prepares the data and estimates a local 
+    logit model [1]_.
+    
+    Parameters
+    -----------
+    params : ConfigLocLogit
+        A configuration class of a local logit model.
+        
+    arrays : ModelArrays
+        Model arrays created with `make_modelarrays`
+        
+    Attributes
+    ----------
+    vtt_grid : numpy.ndarray
+        The VTT grid created with the specifications of `ConfigLocLogit`.
+    
+    vtt_mid : numpy.ndarray
+        The mid points of the VTT grid.
+
+    Methods
+    -------
+    run():
+        Estimates the local logit model.
+    
+    References
+    ----------
+    [1] Fosgerau, Mogens. "Using nonparametrics to specify a model to measure 
+    the value of travel time." Transportation Research Part A: Policy and 
+    Practice 41.9 (2007): 842-856.
+    """
     def __init__(self, params: ConfigLocLogit, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays
@@ -51,7 +101,22 @@ class ModelLocLogit:
         print("Distance between points of the VTT grid is " + str(dist))
         
     def run(self):
+        """Estimates the local logit model.
+        
+        Parameters
+        ----------
+        None.
 
+        Returns
+        -------
+        p : numpy.ndarray
+            The choice probabilities at each interval of the VTT grid.
+        vtt : numpy.ndarray
+            The estimated VTT per respondent, based in the estimated 
+            probabilities (`p`) and the sample.
+        ll : float
+            The log-likelihood function at the optimum of the estimation.
+        """
         # Compute the kernel width
         k = np.r_[self.vtt_grid, 0.] - np.r_[0., self.vtt_grid]
         k = k[:-2]

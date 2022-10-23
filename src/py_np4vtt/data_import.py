@@ -74,8 +74,8 @@ def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_al
 def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMapping) -> ModelArrays:
     """Create model arrays.
 
-    This function takes a Pandas `DataFrame` and a dictionary that contains
-    the mapping between the necessary variables and the variable names in
+    This function takes a Pandas `DataFrame` and a dictionary that contains 
+    the mapping between the necessary variables and the variable names in 
     the dataset.
 
     Parameters
@@ -84,12 +84,12 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMappin
         A Pandas `DataFrame` that contains the dataset.
 
     dataset_varmapping: Dict[Vars,str]
-        A dictionary file that maps the necessary variables required by NP4VTT
-        with the variable names in the dataset. Each key is of the format
-        `Vars.variablename` where `variablename` is one of the required
-        variables (see the documentation of `py_np4vtt.data_format.Vars` for
-        more details about the required variables). Each value is a string
-        that contains the name of the variable corresponding to the necessary
+        A dictionary file that maps the necessary variables required by NP4VTT 
+        with the variable names in the dataset. Each key is of the format 
+        `Vars.variablename` where `variablename` is one of the required 
+        variables (see the documentation of `py_np4vtt.data_format.Vars` for 
+        more details about the required variables). Each value is a string 
+        that contains the name of the variable corresponding to the necessary 
         variable as it appears in `dataset_frame`.
 
     Returns
@@ -149,7 +149,7 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
     """Compute descriptive statistics
     
     It takes the object that contains the model arrays and returns a set of 
-    relevant descriptive statistics regarding respondents, their choices and
+    relevant descriptive statistics regarding respondents, their choices and 
     about the BVTT.
     
     Parameters
@@ -161,7 +161,7 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
     -------
 
     DescriptiveStatsBasic
-        An object that contains the relevant descriptive statistics. Can be
+        An object that contains the relevant descriptive statistics. Can be 
         accessed using `print()`.
     """
     fbe_units = arrs.Choice.astype(int)

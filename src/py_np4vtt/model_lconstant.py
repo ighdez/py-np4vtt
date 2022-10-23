@@ -30,11 +30,11 @@ class ConfigLConstant:
         Maximum value of the VTT grid
         
     supportPoints : int
-        Number of support points of the VTT grid. The VTT grid will contain
+        Number of support points of the VTT grid. The VTT grid will contain 
         `(supportPoints-1)` intervals. Must be greater than zero
         
     kernelWidth : float
-        Kernel width for the Nadaraya-Watson estimator. Must be greater than
+        Kernel width for the Nadaraya-Watson estimator. Must be greater than 
         zero.
     """
     minimum: float
@@ -62,7 +62,7 @@ class ModelLConstant:
     """Local constant model.
     
     This is the model class that prepares the data and estimates a local
-    constant model [1]_.
+    constant model [1,2]_.
     
     Parameters
     -----------
@@ -84,9 +84,12 @@ class ModelLConstant:
     
     References
     ----------
-    [1] Fosgerau, Mogens. "Investigating the distribution of the value of
-    travel time savings." Transportation Research Part B: Methodological
+    [1] Fosgerau, Mogens. "Investigating the distribution of the value of 
+    travel time savings." Transportation Research Part B: Methodological 
     40.8 (2006): 688-707.
+    [2] Fosgerau, Mogens. "Using nonparametrics to specify a model to measure 
+    the value of travel time." Transportation Research Part A: Policy and 
+    Practice 41.9 (2007): 842-856.
     """
 
     def __init__(self, params: ConfigLConstant, arrays: ModelArrays):
@@ -117,7 +120,7 @@ class ModelLConstant:
         mean_f : numpy.ndarray
             The estimated choice probability at each point of the VTT grid
         vtt : numpy.ndarray
-            The estimated VTT per respondent, based in the estimated
+            The estimated VTT per respondent, based in the estimated 
             probabilities (`mean_f`) and the sample.
         """
         mean_f = ModelLConstant.nadaraya_watson(self.vtt_grid,~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
