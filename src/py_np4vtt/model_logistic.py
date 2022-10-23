@@ -18,6 +18,25 @@ warnings.filterwarnings('ignore')
 
 @dataclass
 class ConfigLogistic:
+    """Configuration class of the logistic regression (ANN-0) model.
+    
+    This class stores the configuration parameters of a logistic regression 
+    model and performs integrity checks before being passed to the model 
+    object.
+    
+    Parameters
+    ----------
+    startScale : float
+        The starting value of the scale parameter.
+    startIntercept : float
+        The starting value of the intercept parameter.
+    startParameter: float
+        The starting value of the VTT parameter.
+    maxIterations: int
+        Maximum number of iterations of the estimation routine.
+    seed: Optional[int]
+        Random seed
+    """
     startScale: float
     startIntercept: float
     startParameter: float
@@ -44,11 +63,49 @@ class ConfigLogistic:
 
 class ModelLogistic:
     def __init__(self, cfg: ConfigLogistic, arrays: ModelArrays):
+        """Logistic regression model.
+        
+        This is the model class that prepares the data and estimates 
+        the logistic regression.
+        
+        Parameters
+        -----------
+        params : ConfigLogistic
+            A configuration class of a logistic regression model.
+        arrays : ModelArrays
+            Model arrays created with `make_modelarrays`
+            
+        Attributes
+        ----------
+        None.
+        """
         self.cfg = cfg
         self.arrays = arrays
 
     def run(self):
+        """Estimates the logistic regression model.
+        
+        Parameters
+        ----------
+        None.
 
+        Returns
+        -------
+        x : np.ndarray
+            The estimated parameters of the scale, intercept and VTT parameter.
+        se : np.ndarray
+            The standard errors of the estimated parameters
+        vtt: np.ndarray
+            The estimated VTT per respondent, based in the estimated 
+            parameters and the sample.
+        init_ll : float
+            Log-likelihood at the starting values
+        ll : float
+            Log-likelihood in the optimum.
+        exitflag : int
+            Exit flag of the optimisation routine. If `exitflag=0`, the 
+            optimisation succeeded. Otherwise, check the configuration parameters.
+        """
         # Use passed seed if desired
         if self.cfg.seed:
             np.random.seed(self.cfg.seed)

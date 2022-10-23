@@ -30,7 +30,6 @@ class ConfigANN:
     
     Parameters
     ----------
-    
     hiddenLayerNodes : List[int]
         Topology of the ANN. The length of `hiddenLayerNodes` is the number 
         of hidden layers, and each element of the list is the number of 

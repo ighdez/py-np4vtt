@@ -121,7 +121,8 @@ class ModelRouwendal:
         q_prob : float
             The estimated probability of consistent choice.
         q_est : float
-            The estimated parameter that generates the probability of consistent choice.
+            The estimated parameter that generates the probability of 
+            consistent choice.
         q_se : float
             The standard error of the parameter of consistent choice.
         x : numpy.ndarray
@@ -131,13 +132,16 @@ class ModelRouwendal:
         p : numpy.ndarray
             The cumulative probability of the VTT at each support point.
         vtt : numpy.ndarray
-            The estimated VTT for each respondent, based in the estimated probabilities and the VTT grid.
+            The estimated VTT for each respondent, based in the estimated 
+            probabilities and the VTT grid.
         init_ll : float
-            Value of log-likelihood function in the initial value of startQ. Starting values of support point parameters are equal to zero.
+            Value of log-likelihood function in the initial value of startQ. 
+            Starting values of support point parameters are equal to zero.
         ll : float
             Value of the likelihood function in the optimum.
         exitflag : int
-            Exit flag of the optimisation routine. If `exitflag=0`, the optimisation succeeded. Otherwise, check the configuration parameters.
+            Exit flag of the optimisation routine. If `exitflag=0`, the 
+            optimisation succeeded. Otherwise, check the configuration parameters.
         """
         # Set vector of starting values of xameters to estimate
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
