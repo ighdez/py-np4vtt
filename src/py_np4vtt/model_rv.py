@@ -16,6 +16,21 @@ from py_np4vtt.data_format import ModelArrays
 
 @dataclass
 class ConfigRV:
+    """Configuration class of the random valuation model.
+    
+    This class stores the configuration parameters of a random valuation
+    model and performs integrity checks before being passed to the model 
+    object.
+    
+    Parameters
+    ----------
+    startScale : float
+        Starting value of the scale parameter
+    startVTT : float
+        Starting value of the VTT parameter
+    maxIterations : int
+        Maximum number of iterations of the estimation routine.
+    """
     startScale: float
     startVTT: float
 
@@ -38,9 +53,49 @@ class ModelRV:
     def __init__(self, cfg: ConfigRV, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
+        """Random valuation model.
+        
+        This is the model class that prepares the data and estimates 
+        the random valuation model [1]_.
+        
+        Parameters
+        -----------
+        params : ConfigRV
+            A configuration class of a random valuation model.
+        arrays : ModelArrays
+            Model arrays created with `make_modelarrays`
+            
+        Attributes
+        ----------
+        None.
 
+        References
+        ----------
+        [1] Ojeda-Cabral, Manuel, Richard Batley, and Stephane Hess. "The 
+        value of travel time: random utility versus random valuation." 
+        Transportmetrica A: Transport Science 12.3 (2016): 230-248.
+        """
     def run(self):
+        """Estimates the random valuation model.
+        
+        Parameters
+        ----------
+        None.
 
+        Returns
+        -------
+        x : np.ndarray
+            The estimated parameters of the scale and VTT parameter.
+        se : np.ndarray
+            The standard errors of the estimated parameters
+        init_ll : float
+            Log-likelihood at the starting values
+        ll : float
+            Log-likelihood in the optimum.
+        exitflag : int
+            Exit flag of the optimisation routine. If `exitflag=0`, the 
+            optimisation succeeded. Otherwise, check the configuration parameters.
+        """
         # Set vector of starting values of parameters to estimate
         x0 = np.array([self.cfg.startScale, self.cfg.startVTT])
 
