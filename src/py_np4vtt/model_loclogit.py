@@ -106,7 +106,9 @@ class ModelLocLogit:
         Returns
         -------
         p : numpy.ndarray
-            The choice probabilities at each interval of the VTT grid.
+            The choice probabilities at each interval of the VTT grid. 
+            The first point is always zero while the last point is always 
+            equal to the second last for compatibility with plots.
         vtt : numpy.ndarray
             The estimated VTT per respondent, based in the estimated 
             probabilities (`p`) and the sample.
@@ -134,6 +136,9 @@ class ModelLocLogit:
 
         # Compute the predicted VTT at the midpoints
         vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
+
+        # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
+        p = np.concatenate((0,p,p[-1]),axis=None)
 
         return p, vtt, ll
 

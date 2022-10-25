@@ -135,3 +135,4 @@ data/shared/upstream copy.xlsx
 **/.DS_Store
 
 poetry.lock
+docs/

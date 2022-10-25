@@ -38,3 +38,13 @@ def predicted_vtt(p,vtt_grid,NP):
         count_data = np.append(count_data,dat)
 
     return count_data
+
+# from random import uniform
+
+# def predicted_vtt(ecdf,grid,NP):
+#     pp = ((np.append(ecdf, 0)-np.append(0,ecdf)))
+#     count_data = []
+#     for n in range(1,len(grid)):
+#         dat = [uniform(grid[n-1], grid[n]) for p in range(0, np.round((pp[n]*NP)).astype(int))]
+#         count_data = np.append(count_data,dat)
+#     return count_data

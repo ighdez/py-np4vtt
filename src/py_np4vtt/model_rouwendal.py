@@ -130,7 +130,8 @@ class ModelRouwendal:
         se : numpy.ndarray
             The standard errors of x.
         p : numpy.ndarray
-            The cumulative probability of the VTT at each support point.
+            The cumulative probability of the VTT at each support point. 
+            The first point is always zero for compatibility with plots.
         vtt : numpy.ndarray
             The estimated VTT for each respondent, based in the estimated 
             probabilities and the VTT grid.
@@ -179,6 +180,9 @@ class ModelRouwendal:
 
         # Compute the predicted VTT at the midpoints
         vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
+
+        # Add point 0 in the estimated CDF to make coincide with point zero in the VTT mid point
+        p = np.concatenate((0,p),axis=None)
 
         # Return output
         return q_est, q_se, q_prob, x, se, p, vtt, init_ll, ll, exitflag
