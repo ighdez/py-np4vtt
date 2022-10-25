@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.stats import norm
 from py_np4vtt.data_format import ModelArrays
-from py_np4vtt.utils import predicted_vtt
+from py_np4vtt.utils import predicted_vtt, vtt_midpoints
 
 @dataclass
 class ConfigLConstant:
@@ -72,7 +72,9 @@ class ModelLConstant:
     ----------
     vtt_grid : numpy.ndarray
         The VTT grid created with the specifications of `ConfigLConstant`
-    
+    vtt_mid : numpy.ndarray
+        The mid points of the VTT grid.
+
     Methods
     -------
     run():
@@ -95,6 +97,9 @@ class ModelLConstant:
         # Create grid of support points
         self.vtt_grid = np.linspace(self.params.minimum, self.params.maximum, self.params.supportPoints)
 
+        # Compute the midpoints of the VTT grid
+        self.vtt_mid = vtt_midpoints(self.vtt_grid)
+
         # Compute distance between points at each support point
         dist = self.vtt_grid[1] - self.vtt_grid[0]
 
@@ -113,18 +118,23 @@ class ModelLConstant:
 
         Returns
         -------
-        mean_f : numpy.ndarray
-            The estimated choice probability at each point of the VTT grid
+        p : numpy.ndarray
+            The estimated choice probability at each mid point of the VTT grid. 
+            The first point is always zero while the last point is always equal 
+            to the second last for compatibility with plots.
         vtt : numpy.ndarray
             The estimated VTT per respondent, based in the estimated 
-            probabilities (`mean_f`) and the sample.
+            probabilities (`p`) and the sample.
         """
-        mean_f = ModelLConstant.nadaraya_watson(self.vtt_grid,~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
+        p = ModelLConstant.nadaraya_watson(self.vtt_mid[1:-1],~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
 
-        # Create counts per point of the VTT grid
-        vtt = predicted_vtt(mean_f,self.vtt_grid,self.arrays.NP)
+        # Create counts per point of the VTT mid points
+        vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
 
-        return mean_f, vtt
+        # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
+        p = np.concatenate((0,p,p[-1]),axis=None)
+
+        return p, vtt
 
     # Nadaraya-Watson estimator with gaussian kernel
     @staticmethod
