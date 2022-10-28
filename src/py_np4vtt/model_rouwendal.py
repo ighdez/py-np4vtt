@@ -18,9 +18,9 @@ warnings.filterwarnings('ignore')
 
 @dataclass
 class ConfigRouwendal:
-    """Configuration class of the Rouwendal's model.
+    """Configuration class of the Rouwendal model.
     
-    This class stores the configuration parameters of a Rouwendal's model 
+    This class stores the configuration parameters of a Rouwendal model 
     and performs integrity checks before being passed to the model object.
     
     Parameters
@@ -59,15 +59,15 @@ class ConfigRouwendal:
         return errorList
 
 class ModelRouwendal:
-    """Rouwendal's model.
+    """Rouwendal model.
     
     This is the model class that prepares the data and estimates 
-    the Rouwendal's model [1]_.
+    the Rouwendal model [1]_.
     
     Parameters
     -----------
     params : ConfigRouwendal
-        A configuration class of a Rouwendal's model.
+        A configuration class of a Rouwendal model.
     arrays : ModelArrays
         Model arrays created with `make_modelarrays`
         
@@ -81,7 +81,7 @@ class ModelRouwendal:
     Methods
     -------
     run():
-        Estimates the Rouwendal's model.
+        Estimates the Rouwendal model.
     
     References
     ----------
@@ -110,7 +110,7 @@ class ModelRouwendal:
         print("Distance between points of the VTT grid is " + str(dist))
         
     def run(self):
-        """Estimates the Rouwendal's model.
+        """Estimates the Rouwendal model.
         
         Parameters
         ----------

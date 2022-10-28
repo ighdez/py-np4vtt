@@ -135,7 +135,7 @@ class ModelANN:
         self.y_full = t
 
     def run(self, verbose=True):
-        """Estimates the Rouwendal's model.
+        """Estimates the Rouwendal model.
         
         Parameters
         ----------
