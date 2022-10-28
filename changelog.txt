@@ -1,5 +1,12 @@
 CHANGELOG
 
+[1.0.1]
+- CDF and VTT arrays now are ready to plot
+- Manual improvements
+
+[1.0.0]
+- First stable version
+
 [0.1.6]
 - Bugfixes (ANN scaling leading to problems on VTT recovery)
 
@@ -15,7 +22,6 @@ CHANGELOG
 [0.1.2]
 - Methods were polished
 - Plot routines added but still not operative
-
 
 [0.1.1]
 - Initial version, initial four methods are operative
