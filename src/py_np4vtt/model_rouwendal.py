@@ -118,23 +118,24 @@ class ModelRouwendal:
 
         Returns
         -------
-        q_prob : float
-            The estimated probability of consistent choice.
         q_est : float
             The estimated parameter that generates the probability of 
             consistent choice.
         q_se : float
             The standard error of the parameter of consistent choice.
+        q_prob : float
+            The estimated probability of consistent choice.
         x : numpy.ndarray
-            The estimated parameters at each point of the VTT grid.
+            The estimated density parameters at each point of the VTT grid.
         se : numpy.ndarray
-            The standard errors of x.
+            The standard errors of `x`.
         p : numpy.ndarray
-            The cumulative probability of the VTT at each support point. 
-            The first point is always zero for compatibility with plots.
+            The estimates of the cumulative probability function (CDF) of 
+            the VTT at each support point. The first point is always zero 
+            for compatibility with plots.
         vtt : numpy.ndarray
             The estimated VTT for each respondent, based in the estimated 
-            probabilities and the VTT grid.
+            CDF poonts (p) and the VTT grid.
         init_ll : float
             Value of log-likelihood function in the initial value of startQ. 
             Starting values of support point parameters are equal to zero.

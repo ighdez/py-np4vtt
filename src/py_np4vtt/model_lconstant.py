@@ -119,12 +119,13 @@ class ModelLConstant:
         Returns
         -------
         p : numpy.ndarray
-            The estimated choice probability at each mid point of the VTT grid. 
-            The first point is always zero while the last point is always equal 
-            to the second last for compatibility with plots.
+            The estimates of the cumulative choice probability (CDF), evaluated 
+            at each mid point of the VTT grid. The first point is always zero 
+            while the last point is always equal to the second last for 
+            compatibility with plots.
         vtt : numpy.ndarray
             The estimated VTT per respondent, based in the estimated 
-            probabilities (`p`) and the sample.
+            CDF points (`p`) and the sample.
         """
         p = ModelLConstant.nadaraya_watson(self.vtt_mid[1:-1],~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
 

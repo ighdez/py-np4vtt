@@ -106,12 +106,13 @@ class ModelLocLogit:
         Returns
         -------
         p : numpy.ndarray
-            The choice probabilities at each interval of the VTT grid. 
-            The first point is always zero while the last point is always 
-            equal to the second last for compatibility with plots.
+            The estimates of the cumulative choice probability (CDF), evaluated 
+            at each interval of the VTT grid. The first point is always zero 
+            while the last point is always equal to the second last for 
+            compatibility with plots.
         vtt : numpy.ndarray
             The estimated VTT per respondent, based in the estimated 
-            probabilities (`p`) and the sample.
+            CDF points (`p`) and the sample.
         ll : float
             The log-likelihood function at the optimum of the estimation.
         """
