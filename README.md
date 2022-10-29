@@ -15,6 +15,17 @@ Additionally, a Random Valuation model (Ojeda-Cabral, 2006) is included for benc
 * Use `pip` to install the `py-np4vtt` library normally:
     - `python3 -m pip install py-np4vtt`
 
+
+## Examples
+
+We provide Jupyter Notebooks that show how to configure and estimate each model included in NP4VTT:
+
+   * Local constant model: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/lconstant.ipynb)
+   * Local logit: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/loclogit.ipynb)
+   * Rouwendal model: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/rouwendal.ipynb)
+   * ANN-based VTT model: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/ann.ipynb)
+   * Logistic Regression-based VTT model: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/logistic.ipynb)
+
 ## References
 
    * Fosgerau, M. (2006). Investigating the distribution of the value of travel time savings. Transportation Research Part B: Methodological, 40(8), 688–707. https://doi.org/10.1016/j.trb.2005.09.007
