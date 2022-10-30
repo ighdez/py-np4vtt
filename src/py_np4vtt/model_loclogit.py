@@ -51,7 +51,7 @@ class ModelLocLogit:
     """Local logit model.
     
     This is the model class that prepares the data and estimates a local 
-    logit model [1]_.
+    logit model [1].
     
     Parameters
     -----------

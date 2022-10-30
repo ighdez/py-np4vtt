@@ -63,23 +63,23 @@ class ConfigLogistic:
         return errorList
 
 class ModelLogistic:
+    """Logistic regression model.
+    
+    This is the model class that prepares the data and estimates 
+    the logistic regression.
+    
+    Parameters
+    -----------
+    params : ConfigLogistic
+        A configuration class of a logistic regression model.
+    arrays : ModelArrays
+        Model arrays created with `make_modelarrays`
+        
+    Attributes
+    ----------
+    None.
+    """
     def __init__(self, cfg: ConfigLogistic, arrays: ModelArrays):
-        """Logistic regression model.
-        
-        This is the model class that prepares the data and estimates 
-        the logistic regression.
-        
-        Parameters
-        -----------
-        params : ConfigLogistic
-            A configuration class of a logistic regression model.
-        arrays : ModelArrays
-            Model arrays created with `make_modelarrays`
-            
-        Attributes
-        ----------
-        None.
-        """
         self.cfg = cfg
         self.arrays = arrays
 

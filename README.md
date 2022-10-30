@@ -26,6 +26,12 @@ We provide Jupyter Notebooks that show how to configure and estimate each model 
    * ANN-based VTT model: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/ann.ipynb)
    * Logistic Regression-based VTT model: [link](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/blob/master/examples/logistic.ipynb)
 
+These examples guide the user through the process of loading a dataset, estimating a nonparametric model, and visualising the VTT distribution using scatter and histogram plots. We use the Norwegian 2009 VTT data to illustrate each example.
+
+**Take, for example, the VTT distribution from the Rouwendal model using NP4VTT:**
+
+![VTT distribution from the Rouwendal model using NP4VTT](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/raw/master/examples/outcomes/rouwendal.png)
+
 ## References
 
    * Fosgerau, M. (2006). Investigating the distribution of the value of travel time savings. Transportation Research Part B: Methodological, 40(8), 688–707. https://doi.org/10.1016/j.trb.2005.09.007

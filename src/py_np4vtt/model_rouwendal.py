@@ -63,7 +63,7 @@ class ModelRouwendal:
     """Rouwendal model.
     
     This is the model class that prepares the data and estimates 
-    the Rouwendal model [1]_.
+    the Rouwendal model [1].
     
     Parameters
     -----------

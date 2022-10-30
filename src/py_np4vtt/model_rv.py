@@ -51,31 +51,32 @@ class ConfigRV:
         return errorList
 
 class ModelRV:
+    """Random valuation model.
+    
+    This is the model class that prepares the data and estimates 
+    the random valuation model [1].
+    
+    Parameters
+    -----------
+    params : ConfigRV
+        A configuration class of a random valuation model.
+    arrays : ModelArrays
+        Model arrays created with `make_modelarrays`
+        
+    Attributes
+    ----------
+    None.
+
+    References
+    ----------
+    [1] Ojeda-Cabral, Manuel, Richard Batley, and Stephane Hess. "The 
+    value of travel time: random utility versus random valuation." 
+    Transportmetrica A: Transport Science 12.3 (2016): 230-248.
+    """
     def __init__(self, cfg: ConfigRV, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
-        """Random valuation model.
-        
-        This is the model class that prepares the data and estimates 
-        the random valuation model [1]_.
-        
-        Parameters
-        -----------
-        params : ConfigRV
-            A configuration class of a random valuation model.
-        arrays : ModelArrays
-            Model arrays created with `make_modelarrays`
-            
-        Attributes
-        ----------
-        None.
 
-        References
-        ----------
-        [1] Ojeda-Cabral, Manuel, Richard Batley, and Stephane Hess. "The 
-        value of travel time: random utility versus random valuation." 
-        Transportmetrica A: Transport Science 12.3 (2016): 230-248.
-        """
     def run(self):
         """Estimates the random valuation model.
         

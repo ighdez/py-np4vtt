@@ -59,7 +59,7 @@ class ModelLConstant:
     """Local constant model.
     
     This is the model class that prepares the data and estimates a local
-    constant model [1,2]_.
+    constant model [1,2].
     
     Parameters
     -----------
@@ -89,7 +89,6 @@ class ModelLConstant:
     the value of travel time." Transportation Research Part A: Policy and 
     Practice 41.9 (2007): 842-856.
     """
-
     def __init__(self, params: ConfigLConstant, arrays: ModelArrays):
         self.params = params
         self.arrays = arrays

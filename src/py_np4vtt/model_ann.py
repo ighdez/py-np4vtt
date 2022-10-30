@@ -67,7 +67,7 @@ class ModelANN:
     """ANN model.
     
     This is the model class that prepares the data and estimates 
-    the ANN-based model [1]_.
+    the ANN-based model [1].
     
     Parameters
     -----------
