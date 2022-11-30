@@ -1,4 +1,6 @@
 CHANGELOG
+[1.0.3]
+- Predicted VTT modified
 
 [1.0.2]
 - Proper documentation

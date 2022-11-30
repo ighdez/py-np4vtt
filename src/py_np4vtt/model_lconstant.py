@@ -129,7 +129,7 @@ class ModelLConstant:
         p = ModelLConstant.nadaraya_watson(self.vtt_mid[1:-1],~self.arrays.Choice.flatten(),self.arrays.BVTT.flatten(),self.params.kernelWidth)
 
         # Create counts per point of the VTT mid points
-        vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
+        vtt = predicted_vtt(p,self.vtt_grid,self.arrays.NP)
 
         # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
         p = np.concatenate((0,p,p[-1]),axis=None)

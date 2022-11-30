@@ -137,7 +137,7 @@ class ModelLocLogit:
         ll = -fval
 
         # Compute the predicted VTT at the midpoints
-        vtt = predicted_vtt(p,self.vtt_mid,self.arrays.NP)
+        vtt = predicted_vtt(p,self.vtt_grid,self.arrays.NP)
 
         # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
         p = np.concatenate((0,p,p[-1]),axis=None)
