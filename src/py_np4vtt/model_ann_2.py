@@ -5,7 +5,6 @@
 #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""Modules to configure and estimate an ANN-based VTT model."""
 from dataclasses import dataclass
 
 from typing import List, Optional
@@ -25,25 +24,6 @@ from sklearn.preprocessing import StandardScaler
 
 @dataclass
 class ConfigANN:
-    """Configuration class of the ANN-based model.
-    
-    This class stores the configuration parameters of an ANN-based model 
-    and performs integrity checks before being passed to the model object.
-    
-    Parameters
-    ----------
-    hiddenLayerNodes : List[int]
-        Topology of the ANN. The length of `hiddenLayerNodes` is the number 
-        of hidden layers, and each element of the list is the number of 
-        nodes of the corresponding layer.
-    trainingRepeats : int
-        Number of estimation repeats of the ANN.
-    shufflesPerRepeat : int
-        Random shuffles of the data per repetition.
-
-    seed : Optional[int]
-        Random seed for the shuffling and estimation process.
-    """
     hiddenLayerNodes: List[int]
 
     trainingRepeats: int
@@ -65,44 +45,6 @@ class ConfigANN:
         return errorList
 
 class ModelANN:
-    """ANN model.
-    
-    This is the model class that prepares the data and estimates 
-    the ANN-based model [1].
-    
-    Parameters
-    -----------
-    params : ConfigANN
-        A configuration class of an ANN-based model.
-    arrays : ModelArrays
-        Model arrays created with `make_modelarrays`
-        
-    Attributes
-    ----------
-    X_train : numpy.ndarray
-        Input data for training (estimation), i.e. the BVTT of each choice set and the T-1'th choices
-    X_test : numpy.ndarray
-        Input data for testing (prediction)
-    X_full : numpy.ndarray
-        Full input data
-    y_train : numpy.ndarray
-        Output data for training, i.e. the T'th choice
-    y_test : numpy.ndarray
-        Output data for testing
-    y_full : numpy.ndarray
-        Full output data
-
-    Methods
-    -------
-    run():
-        Estimates the ANN-based model.
-    
-    References
-    ----------
-    [1] van Cranenburgh, Sander, and Marco Kouwenhoven. "An artificial neural 
-    network based method to uncover the value-of-travel-time distribution." 
-    Transportation 48.5 (2021): 2545-2583.
-    """
     def __init__(self, cfg: ConfigANN, arrays: ModelArrays):
         self.cfg = cfg
         self.arrays = arrays
@@ -126,13 +68,13 @@ class ModelANN:
         t = full_data_array[:,0]
         x = full_data_array[:,1:]
 
-        # Scale
+        # Scaler added
         scaler = StandardScaler()
         scaler.fit(x)
         x_scaled = scaler.transform(x)
 
         # Separate in train and test
-        X_train, X_test, y_train, y_test = train_test_split(x_scaled,t,test_size = 0.15,random_state=self.cfg.seed)
+        X_train, X_test, y_train, y_test = train_test_split(x_scaled,t,test_size = 0.15)
 
         self.X_train = X_train
         self.X_test = X_test
@@ -143,21 +85,6 @@ class ModelANN:
         self.scaler = scaler
 
     def run(self, verbose=True):
-        """Estimates the Rouwendal model.
-        
-        Parameters
-        ----------
-        None.
-
-        Returns
-        -------
-        ll_list : np.ndarray
-            The log-likelihood values per repetition.
-        r2_list : np.ndarray
-            The Rho-squared values per repetition.
-        vtt_list : np.ndarray
-            The estimated VTT per respondent and repetition.
-        """
         ll_list = []
         rho_sq = []
         y_predict = []
@@ -172,12 +99,12 @@ class ModelANN:
                 hidden_layer_sizes=self.cfg.hiddenLayerNodes,
                 activation='tanh',
                 tol=1e-4,
-                alpha=0.,
+                alpha=0,
                 n_iter_no_change=6,
                 max_iter=1000,
                 early_stopping=True,
                 validation_fraction=0.1275,
-                verbose=False,random_state=self.cfg.seed).fit(self.X_train,self.y_train)
+                verbose=False).fit(self.X_train,self.y_train)
 
             # Predict in test sample
             y_predict_train = clf.predict_proba(self.X_train)
@@ -215,9 +142,7 @@ class ModelANN:
 
             VTT_mid_list.append(VTT_mid)
 
-            if verbose:
-                print('(No VTT recovered for ' + str(no_vtt) + ' respondents)')
-
+            print(f'No VTT recovered for {no_vtt} respondents')
         ll_list = np.array(ll_list)
         r2_list = np.array(rho_sq)
         vtt_list = np.array(VTT_mid_list)
