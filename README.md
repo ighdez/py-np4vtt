@@ -1,4 +1,4 @@
-# PyNP4VTT
+# NP4VTT
 
 NP4VTT is a Python package that enables researchers to estimate and compare nonparametric models in a fast and convenient way. It comprises five nonparametric models for estimating the VTT distribution from data coming from two-attribute-two-alternative stated choice experiments:
 
