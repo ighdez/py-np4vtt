@@ -39,10 +39,31 @@ class ModelArrays:
     ID: npt.NDArray[np.int_]  # Unique participant IDs
     NP: int  # Number of participants
     T: int  # Number of choice situations per participant
+    is_balanced_panel: bool # Is the dataset a balanced panel?
 
 
 @dataclass
 class DescriptiveStatsBasic:
+    NP: int  # Number of participants
+    ChosenBVTT_Mean: float  # Mean chosen BVTT
+    BVTT_min: float  # Minimum of BVTT
+    BVTT_max: float  # Maximum of BVTT
+
+    def __str__(self) -> str:
+        formatted_descriptives = cleandoc(f"""
+            Balanced panel: False
+            No. individuals: {self.NP}
+
+            BVTT statistics:
+            Mean chosen BVTT: {self.ChosenBVTT_Mean}
+            Minimum of BVTT: {self.BVTT_min}
+            Maximum of BVTT: {self.BVTT_max}
+        """)
+
+        return formatted_descriptives
+
+@dataclass
+class DescriptiveStatsPanel:
     NP: int  # Number of participants
     T: int  # Number of choice situations per participant
     NT_FastExp: int  # Number of non-traders (fast-expensive alt.)
@@ -53,6 +74,7 @@ class DescriptiveStatsBasic:
 
     def __str__(self) -> str:
         formatted_descriptives = cleandoc(f"""
+            Balanced panel: True
             No. individuals: {self.NP}
             Sets per indiv.: {self.T}
 

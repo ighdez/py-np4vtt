@@ -13,7 +13,7 @@ from typing import List
 import pandas as pd
 import numpy as np
 
-from py_np4vtt.data_format import Vars, VarsMapping, DescriptiveStatsBasic, ModelArrays, Arrays
+from py_np4vtt.data_format import Vars, VarsMapping, DescriptiveStatsBasic, DescriptiveStatsPanel, ModelArrays, Arrays
 
 
 class VarMappingException(Exception):
@@ -46,8 +46,8 @@ def validate_modeldata(id_all, t, cost1, cost2, time1, time2, slow_alt, cheap_al
     if not np.isfinite(id_all).all():
         errorList.append('There are either NAs or (minus) infinite values in ID Variable')
 
-    if not (int(t) == t):
-        errorList.append('Number of choice situations must be equal for all individuals.')
+    # if not (int(t) == t):
+    #     errorList.append('Number of choice situations must be equal for all individuals.')
 
     if not np.isfinite(cost1).all():
         errorList.append('There are either NAs or (minus) infinite values in Cost of alternative 1.')
@@ -120,17 +120,27 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMappin
     # Create scalars and ID variables
     id_all = study_arrays[Vars.Id]
     id_uniq = pd.unique(id_all)
-    npar = id_uniq.size
     t = id_all.size / id_uniq.size
 
-    errorList = validate_modeldata(id_all, t, c1, c2, t1, t2, slow_alt, cheap_alt, choice)
-    t_int = math.floor(t)
+    # Determine if the panel is balanced
+    if int(t) == t:
+        is_balanced_panel = True
+        t_int = math.floor(t)
+        rows = id_uniq
+    else:
+        is_balanced_panel = False
+        t_int = 1
+        rows = id_all.size
+
+    npar = id_uniq.size
+
+    # errorList = validate_modeldata(id_all, t, c1, c2, t1, t2, slow_alt, cheap_alt, choice)
 
     # BVTT
-    bvtt = (- (c1-c2)/(t1-t2)).reshape((npar,t_int))
+    bvtt = (- (c1-c2)/(t1-t2)).reshape((rows,t_int))
 
     # FBE = "Fast But Expensive"
-    fbe_chosen = (choice != cheap_alt).reshape((npar, t_int))
+    fbe_chosen = (choice != cheap_alt).reshape((rows, t_int))
 
     # The number of times a DM accepted the 'FBE' alt. Sum accross columns
     accepts = np.sum(fbe_chosen.astype(int), 1)
@@ -142,6 +152,7 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMappin
         ID=id_uniq,
         NP=npar,
         T=t_int,
+        is_balanced_panel=is_balanced_panel
     )
 
 
@@ -171,16 +182,28 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
     # noinspection PyTypeChecker
     chosenBVTT_mean: int = np.sum(chosenBVTT)/np.sum(fbe_units)
 
-    chosen_fastexp = np.sum(fbe_units, 1)
-    nt_cheapslow = np.count_nonzero(chosen_fastexp == 0)
-    nt_fastext = np.count_nonzero(chosen_fastexp == arrs.T)
-
-    return DescriptiveStatsBasic(
-        NP=arrs.NP,
-        T=arrs.T,
+    if arrs.is_balanced_panel:
+        n = arrs.NP
+        t = arrs.T
+        chosen_fastexp = np.sum(fbe_units, 1)
+        nt_cheapslow = np.count_nonzero(chosen_fastexp == 0)
+        nt_fastext = np.count_nonzero(chosen_fastexp == arrs.T)
+    
+        return DescriptiveStatsPanel(
+        NP=n,
+        T=t,
         NT_FastExp=nt_fastext,
         NT_CheapSlow=nt_cheapslow,
         ChosenBVTT_Mean=np.round(chosenBVTT_mean,4),
         BVTT_min=np.round(np.amin(arrs.BVTT),4),
         BVTT_max=np.round(np.amax(arrs.BVTT),4),
-    )
+        )
+    else:
+        n = arrs.NP * arrs.T
+
+        return DescriptiveStatsBasic(
+        NP=n,
+        ChosenBVTT_Mean=np.round(chosenBVTT_mean,4),
+        BVTT_min=np.round(np.amin(arrs.BVTT),4),
+        BVTT_max=np.round(np.amax(arrs.BVTT),4),
+        )

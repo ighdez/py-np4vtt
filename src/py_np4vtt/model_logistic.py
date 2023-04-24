@@ -84,6 +84,9 @@ class ModelLogistic:
         self.cfg = cfg
         self.arrays = arrays
 
+        # Check if data is a balanced panel. Otherwise raise an error
+        assert arrays.is_balanced_panel, "Data is not a balanced panel. ModelLogistic is only compatible with balanced panel data"
+
     def run(self):
         """Estimates the logistic regression model.
         
