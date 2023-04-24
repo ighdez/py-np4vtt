@@ -12,6 +12,7 @@ from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
 import warnings
+import time
 
 from py_np4vtt.data_format import ModelArrays
 
@@ -106,6 +107,8 @@ class ModelLogistic:
         exitflag : int
             Exit flag of the optimisation routine. If `exitflag=0`, the 
             optimisation succeeded. Otherwise, check the configuration parameters.
+        diff_time : float
+            The estimation time in seconds.
         """
         # Use passed seed if desired
         if self.cfg.seed:
@@ -132,7 +135,12 @@ class ModelLogistic:
         argTuple = (sumYBVTT, BVTT, y_regress)
         
         # Start minimization routine
+        t0 = time.time()
         results = minimize(ModelLogistic.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6,'maxiter': self.cfg.maxIterations})
+
+        # Compute elapsed time
+        t1 = time.time()
+        diff_time = t1 - t0
 
         # Collect results
         x = results['x']
@@ -145,7 +153,7 @@ class ModelLogistic:
         vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
         vtt = np.concatenate((0.,vtt),axis=None)
         
-        return x, se, vtt, init_ll ,ll, exitflag
+        return x, se, vtt, init_ll ,ll, exitflag, diff_time
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):

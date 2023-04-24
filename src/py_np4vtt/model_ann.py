@@ -15,6 +15,7 @@ from numpy import ndarray
 from py_np4vtt.data_format import ModelArrays
 
 import numpy as np
+import time
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
@@ -157,12 +158,18 @@ class ModelANN:
             The Rho-squared values per repetition.
         vtt_list : np.ndarray
             The estimated VTT per respondent and repetition.
+        diff_time : float
+            The estimation time in seconds.
+        avg_time : float
+            Average estimation time per repetition.
         """
         ll_list = []
         rho_sq = []
         y_predict = []
         VTT_mid_list = []
 
+        # Start optimisation loop
+        t0 = time.time()
         for r in range(self.cfg.trainingRepeats):
             
             if verbose:
@@ -218,11 +225,16 @@ class ModelANN:
             if verbose:
                 print('(No VTT recovered for ' + str(no_vtt) + ' respondents)')
 
+        # Compute elapsed time
+        t1 = time.time()
+        diff_time = t1 - t0
+        avg_time = diff_time/self.cfg.trainingRepeats
+
         ll_list = np.array(ll_list)
         r2_list = np.array(rho_sq)
         vtt_list = np.array(VTT_mid_list)
 
-        return ll_list, r2_list, vtt_list
+        return ll_list, r2_list, vtt_list, diff_time, avg_time
 
     @staticmethod
     def simulateNChoice(self,clf,y,vtt_grid,X,R):

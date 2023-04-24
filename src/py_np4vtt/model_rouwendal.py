@@ -14,6 +14,7 @@ import numpy as np
 import warnings
 from py_np4vtt.data_format import ModelArrays
 from py_np4vtt.utils import vtt_midpoints, predicted_vtt
+import time
 
 warnings.filterwarnings('ignore')
 
@@ -145,6 +146,8 @@ class ModelRouwendal:
         exitflag : int
             Exit flag of the optimisation routine. If `exitflag=0`, the 
             optimisation succeeded. Otherwise, check the configuration parameters.
+        diff_time : float
+            The estimation time in seconds.
         """
         # Set vector of starting values of xameters to estimate
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
@@ -160,7 +163,12 @@ class ModelRouwendal:
         argTuple = (self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
 
         # Start optimization
+        t0 = time.time()
         results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+
+        # Compute elapsed time
+        t1 = time.time()
+        diff_time = t1 - t0
 
         # Collect results
         x = results['x']
@@ -187,7 +195,7 @@ class ModelRouwendal:
         p = np.concatenate((0,p),axis=None)
 
         # Return output
-        return q_est, q_se, q_prob, x, se, p, vtt, init_ll, ll, exitflag
+        return q_est, q_se, q_prob, x, se, p, vtt, init_ll, ll, exitflag, diff_time
 
     @staticmethod
     def objectiveFunction(x, NP, T, BVTT, Choice, vtt_grid):

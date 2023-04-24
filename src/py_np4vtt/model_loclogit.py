@@ -11,6 +11,7 @@ import numpy as np
 from scipy.optimize import minimize
 from py_np4vtt.data_format import ModelArrays
 from py_np4vtt.utils import vtt_midpoints, predicted_vtt
+import time
 
 @dataclass
 class ConfigLocLogit:
@@ -116,6 +117,8 @@ class ModelLocLogit:
             CDF points (`p`) and the sample.
         ll : float
             The log-likelihood function at the optimum of the estimation.
+        diff_time : float
+            The estimation time in seconds.
         """
         # Compute the kernel width
         k = np.r_[self.vtt_grid, 0.] - np.r_[0., self.vtt_grid]
@@ -125,13 +128,18 @@ class ModelLocLogit:
         YX = self.arrays.Choice.T.flatten()
 
         # Perform a weighted logit for each support point
+        t0 = time.time()
         p = []
         fval = 0.
         for n in range(len(self.vtt_grid)-1):
             x, fval_x = ModelLocLogit.initLocalLogit(n, k[n], self.arrays.BVTT, YX, self.vtt_grid)
             p.append(x[0])
             fval = fval + fval_x
-        
+
+        # Compute elapsed time
+        t1 = time.time()
+        diff_time = t1 - t0
+
         # Return probability array and -ll
         p = np.array(p)
         ll = -fval
@@ -142,7 +150,7 @@ class ModelLocLogit:
         # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
         p = np.concatenate((0,p,p[-1]),axis=None)
 
-        return p, vtt, ll
+        return p, vtt, ll, diff_time
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):

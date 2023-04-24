@@ -1,6 +1,9 @@
 CHANGELOG
+[1.0.5]
+- Models now report the estimation time
+
 [1.0.4]
-Added a standarscaler for the ANN training
+- Added a standarscaler for the ANN training
 
 [1.0.3]
 - Predicted VTT modified

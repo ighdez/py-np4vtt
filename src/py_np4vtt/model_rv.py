@@ -11,6 +11,7 @@ from typing import Optional, Tuple
 from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
+import time
 
 from py_np4vtt.data_format import ModelArrays
 
@@ -97,6 +98,8 @@ class ModelRV:
         exitflag : int
             Exit flag of the optimisation routine. If `exitflag=0`, the 
             optimisation succeeded. Otherwise, check the configuration parameters.
+        diff_time : float
+            The estimation time in seconds.
         """
         # Set vector of starting values of parameters to estimate
         x0 = np.array([self.cfg.startScale, self.cfg.startVTT])
@@ -110,7 +113,12 @@ class ModelRV:
         argTuple = (BVTT, y_regress)
 
         # Start minimization routine
+        t0 = time.time()
         results = minimize(ModelRV.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6,'maxiter': self.cfg.maxIterations})
+
+        # Compute elapsed time
+        t1 = time.time()
+        diff_time = t1 - t0
 
         # Collect results
         x = results['x']
@@ -119,7 +127,7 @@ class ModelRV:
         ll = -results['fun']
         exitflag = results['status']
 
-        return x, se, init_ll, ll, exitflag
+        return x, se, init_ll, ll, exitflag, diff_time
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):
