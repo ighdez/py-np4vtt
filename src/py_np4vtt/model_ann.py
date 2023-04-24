@@ -108,6 +108,9 @@ class ModelANN:
         self.cfg = cfg
         self.arrays = arrays
 
+        # Check if data is a balanced panel. Otherwise raise an error
+        assert arrays.is_balanced_panel, "Data is not a balanced panel. ModelANN is only compatible with balanced panel data"
+
         # Initialise arrays for randomisation
         shuffle_index = np.zeros((self.cfg.shufflesPerRepeat,self.arrays.T+1))
         full_data_array = np.zeros((self.arrays.NP,self.cfg.shufflesPerRepeat*(self.arrays.T+1),2))

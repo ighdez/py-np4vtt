@@ -96,6 +96,9 @@ class ModelRouwendal:
         self.cfg = cfg
         self.arrays = arrays
 
+        # Check if data is a balanced panel. Otherwise raise an error
+        assert arrays.is_balanced_panel, "Data is not a balanced panel. ModelRouwendal is only compatible with balanced panel data"
+
         # Create grid of support points
         self.vtt_grid = np.linspace(self.cfg.minimum, self.cfg.maximum, self.cfg.supportPoints)
 
