@@ -8,13 +8,12 @@
 """Modules to configure and estimate a Random Valuation model."""
 from dataclasses import dataclass
 from typing import Optional, Tuple
-from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
 import time
 
 from py_np4vtt.data_format import ModelArrays
-
+from py_np4vtt.utils import _bfgsmin
 
 @dataclass
 class ConfigRV:
@@ -114,7 +113,7 @@ class ModelRV:
 
         # Start minimization routine
         t0 = time.time()
-        results = minimize(ModelRV.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6,'maxiter': self.cfg.maxIterations})
+        results = _bfgsmin(ModelRV.objectiveFunction, x0, args=argTuple, tol=1e-6,maxiter=self.cfg.maxIterations,verbose=True)
 
         # Compute elapsed time
         t1 = time.time()
@@ -125,7 +124,7 @@ class ModelRV:
         hess = Hessian(ModelRV.objectiveFunction,method='forward')(x, BVTT, y_regress)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         ll = -results['fun']
-        exitflag = results['status']
+        exitflag = results['convergence']
 
         return x, se, init_ll, ll, exitflag, diff_time
 
