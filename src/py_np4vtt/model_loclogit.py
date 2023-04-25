@@ -8,9 +8,8 @@
 """Modules to configure and estimate a Local logit model."""
 from dataclasses import dataclass
 import numpy as np
-from scipy.optimize import minimize
 from py_np4vtt.data_format import ModelArrays
-from py_np4vtt.utils import vtt_midpoints, predicted_vtt
+from py_np4vtt.utils import vtt_midpoints, predicted_vtt, _bfgsmin
 import time
 
 @dataclass
@@ -165,7 +164,7 @@ class ModelLocLogit:
         # Search function
         coef_start = np.array([0., 0.])
         args = (y_local, xn, x0, weight)
-        results = minimize(ModelLocLogit.objectiveFunction, coef_start, args=args, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = _bfgsmin(ModelLocLogit.objectiveFunction, coef_start, args=args, tol=1e-6,verbose=False)
 
         # Collect results
         x = results['x']
