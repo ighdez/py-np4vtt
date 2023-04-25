@@ -166,11 +166,11 @@ class ModelRouwendal:
 
         # Start optimization
         t0 = time.time()
-        results = _bfgsmin(ModelRouwendal.objectiveFunction, x0, args=argTuple, tol=1e-5,verbose=True)
+        results = _bfgsmin(ModelRouwendal.objectiveFunction, x0, args=argTuple, tol=1e-6,verbose=True)
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelRouwendal.objectiveFunction)(x,self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
+        hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         ll = -results['fun']
         exitflag = results['convergence']
