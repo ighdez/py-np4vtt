@@ -8,12 +8,11 @@
 """Modules to configure and estimate a Rouwendal model."""
 from dataclasses import dataclass
 from typing import Tuple
-from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
 import warnings
 from py_np4vtt.data_format import ModelArrays
-from py_np4vtt.utils import vtt_midpoints, predicted_vtt
+from py_np4vtt.utils import vtt_midpoints, predicted_vtt,_bfgsmin
 import time
 
 warnings.filterwarnings('ignore')
@@ -174,7 +173,7 @@ class ModelRouwendal:
 
         # Start optimization
         t0 = time.time()
-        results = minimize(ModelRouwendal.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6})
+        results = _bfgsmin(ModelRouwendal.objectiveFunction, x0, args=argTuple,tol=1e-6,verbose=True)
 
         # Compute elapsed time
         t1 = time.time()
@@ -185,7 +184,7 @@ class ModelRouwendal:
         hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, BVTT_array, Choice_array, self.vtt_grid)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         ll = -results['fun']
-        exitflag = results['status']
+        exitflag = results['convergence']
 
         # Get estimated probability of consistent choice
         q_prob = np.exp(x[0])/(1+np.exp(x[0]))

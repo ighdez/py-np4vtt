@@ -1,9 +1,12 @@
 CHANGELOG
 [1.0.5]
 - Models now report the estimation time
+- User-written BFGS optimiser implemented (supports multithreading)
+- Rouwendal's model code is optimised for array-like operations
+- Support for unbalanced panel and non-panel data (for supported models)
 
 [1.0.4]
-- Added a standarscaler for the ANN training
+- Added a StandardScaler for the ANN training
 
 [1.0.3]
 - Predicted VTT modified
