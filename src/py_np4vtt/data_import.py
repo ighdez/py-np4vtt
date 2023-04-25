@@ -126,7 +126,7 @@ def make_modelarrays(dataset_frame: pd.DataFrame, dataset_varmapping: VarsMappin
     if int(t) == t:
         is_balanced_panel = True
         t_int = math.floor(t)
-        rows = id_uniq
+        rows = id_uniq.size
     else:
         is_balanced_panel = False
         t_int = 1
