@@ -155,14 +155,21 @@ class ModelRouwendal:
         q0 = np.log(self.cfg.startQ/(1-self.cfg.startQ))
         x0 = np.hstack([q0, np.zeros(len(self.vtt_grid))])
 
+        # Get VTT grid shape
+        grid_shape = len(self.vtt_grid)
+
+        # Prepare arrays
+        BVTT_array = np.tile(self.arrays.BVTT,(grid_shape,1,1)).T
+        Choice_array = np.tile(self.arrays.Choice,(grid_shape,1,1)).T
+
         # Initial value of the log-likelihood function
-        init_ll = -ModelRouwendal.objectiveFunction(x0, self.arrays.NP, self.arrays.T, self.arrays.BVTT,
-                                                      self.arrays.Choice, self.vtt_grid)
+        init_ll = -ModelRouwendal.objectiveFunction(x0, self.arrays.NP, self.arrays.T, BVTT_array,
+                                                      Choice_array, self.vtt_grid)
 
         # TODO: add an integrity check: initialVal should be finite. Otherwise, rise an error.
 
         # Starting values
-        argTuple = (self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
+        argTuple = (self.arrays.NP, self.arrays.T, BVTT_array, Choice_array, self.vtt_grid)
 
         # Start optimization
         t0 = time.time()
@@ -170,7 +177,7 @@ class ModelRouwendal:
 
         # Collect results
         x = results['x']
-        hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, self.arrays.BVTT, self.arrays.Choice, self.vtt_grid)
+        hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, BVTT_array, Choice_array, self.vtt_grid)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         ll = -results['fun']
         exitflag = results['convergence']
@@ -206,12 +213,16 @@ class ModelRouwendal:
         q = np.exp(x[0]) / (1 + np.exp(x[0]))
         fvtt = np.exp(x[1:]) / np.sum(np.exp(x[1:]))
 
-        # Conditional probability
-        P = np.zeros((NP, len(vtt_grid)))
+        # Compute conditional probabilities
+        tau = ((vtt_grid > BVTT) == Choice).astype(int).sum(axis=0)
+        P = ((q**tau) * (1-q)**(T-tau))
 
-        for n in range(len(vtt_grid)):
-            tau = np.sum(((vtt_grid[n] > BVTT) == Choice).astype(int), axis=1)
-            P[:, n] = (q**tau) * ((1-q) ** (T-tau))
+        # Conditional probability
+        # P = np.zeros((NP, len(vtt_grid)))
+
+        # for n in range(len(vtt_grid)):
+        #     tau = np.sum(((vtt_grid[n] > BVTT) == Choice).astype(int), axis=1)
+        #     P[:, n] = (q**tau) * ((1-q) ** (T-tau))
             
         # Maximise log-likelihood. L is computed by multiplying conditional P
         # with density fvtt, average and sum across all obs
