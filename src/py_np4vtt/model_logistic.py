@@ -8,11 +8,11 @@
 """Modules to configure and estimate a Logistic regression-based model."""
 from dataclasses import dataclass
 from typing import Optional, Tuple
-from scipy.optimize import minimize
 from numdifftools import Hessian
 import numpy as np
 import warnings
 import time
+from py_np4vtt.utils import _bfgsmin
 
 from py_np4vtt.data_format import ModelArrays
 
@@ -139,7 +139,7 @@ class ModelLogistic:
         
         # Start minimization routine
         t0 = time.time()
-        results = minimize(ModelLogistic.objectiveFunction, x0, args=argTuple, method='L-BFGS-B',options={'gtol': 1e-6,'maxiter': self.cfg.maxIterations})
+        results = _bfgsmin(ModelLogistic.objectiveFunction, x0, args=argTuple,tol=1e-6, maxiter= self.cfg.maxIterations,verbose=True)
 
         # Compute elapsed time
         t1 = time.time()
@@ -150,7 +150,7 @@ class ModelLogistic:
         hess = Hessian(ModelLogistic.objectiveFunction,method='forward')(x,sumYBVTT, BVTT, y_regress)
         se = np.sqrt(np.diag(np.linalg.inv(hess)))
         ll = -results['fun']
-        exitflag = results['status']
+        exitflag = results['convergence']
 
         # Compute VTT
         vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
