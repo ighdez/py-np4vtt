@@ -97,7 +97,7 @@ class ModelRV:
         exitflag : int
             Exit flag of the optimisation routine. If `exitflag=0`, the 
             optimisation succeeded. Otherwise, check the configuration parameters.
-        diff_time : float
+        est_time : float
             The estimation time in seconds.
         """
         # Set vector of starting values of parameters to estimate
@@ -117,7 +117,7 @@ class ModelRV:
 
         # Compute elapsed time
         t1 = time.time()
-        diff_time = t1 - t0
+        est_time = t1 - t0
 
         # Collect results
         x = results['x']
@@ -126,7 +126,7 @@ class ModelRV:
         ll = -results['fun']
         exitflag = results['convergence']
 
-        return x, se, init_ll, ll, exitflag, diff_time
+        return x, se, init_ll, ll, exitflag, est_time
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):

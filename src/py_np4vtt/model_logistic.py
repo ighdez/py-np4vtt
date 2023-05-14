@@ -110,7 +110,7 @@ class ModelLogistic:
         exitflag : int
             Exit flag of the optimisation routine. If `exitflag=0`, the 
             optimisation succeeded. Otherwise, check the configuration parameters.
-        diff_time : float
+        est_time : float
             The estimation time in seconds.
         """
         # Use passed seed if desired
@@ -143,7 +143,7 @@ class ModelLogistic:
 
         # Compute elapsed time
         t1 = time.time()
-        diff_time = t1 - t0
+        est_time = t1 - t0
 
         # Collect results
         x = results['x']
@@ -156,7 +156,7 @@ class ModelLogistic:
         vtt = x[1] + x[2]*((self.arrays.T-1)/self.arrays.T)*np.sum(self.arrays.Choice*self.arrays.BVTT,1)
         vtt = np.concatenate((0.,vtt),axis=None)
         
-        return x, se, vtt, init_ll ,ll, exitflag, diff_time
+        return x, se, vtt, init_ll ,ll, exitflag, est_time
 
     @staticmethod
     def objectiveFunction(x: np.ndarray, sumYBVTT: np.ndarray, BVTT: np.ndarray, y_regress: np.ndarray):

@@ -116,7 +116,7 @@ class ModelLocLogit:
             CDF points (`p`) and the sample.
         ll : float
             The log-likelihood function at the optimum of the estimation.
-        diff_time : float
+        est_time : float
             The estimation time in seconds.
         """
         # Compute the kernel width
@@ -137,7 +137,7 @@ class ModelLocLogit:
 
         # Compute elapsed time
         t1 = time.time()
-        diff_time = t1 - t0
+        est_time = t1 - t0
 
         # Return probability array and -ll
         p = np.array(p)
@@ -149,7 +149,7 @@ class ModelLocLogit:
         # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
         p = np.concatenate((0,p,p[-1]),axis=None)
 
-        return p, vtt, ll, diff_time
+        return p, vtt, ll, est_time
 
     @staticmethod
     def initLocalLogit(n, k, BVTT, YX, vtt_grid):

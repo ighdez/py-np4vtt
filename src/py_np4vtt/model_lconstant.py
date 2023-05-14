@@ -126,7 +126,7 @@ class ModelLConstant:
         vtt : numpy.ndarray
             The estimated VTT per respondent, based in the estimated 
             CDF points (`p`) and the sample.
-        diff_time : float
+        est_time : float
             The estimation time in seconds.
         """
 
@@ -139,13 +139,13 @@ class ModelLConstant:
 
         # Compute elapsed time
         t1 = time.time()
-        diff_time = t1 - t0
+        est_time = t1 - t0
 
         # Add point 0 in the estimated CDF and repeat last point to make coincide with point zero and last point in the VTT mid point
         p = np.concatenate((0,p,p[-1]),axis=None)
 
         # Return list of outcomes
-        return p, vtt, diff_time
+        return p, vtt, est_time
 
     # Nadaraya-Watson estimator with gaussian kernel
     @staticmethod

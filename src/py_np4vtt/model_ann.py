@@ -161,7 +161,7 @@ class ModelANN:
             The Rho-squared values per repetition.
         vtt_list : np.ndarray
             The estimated VTT per respondent and repetition.
-        diff_time : float
+        est_time : float
             The estimation time in seconds.
         avg_time : float
             Average estimation time per repetition.
@@ -230,14 +230,14 @@ class ModelANN:
 
         # Compute elapsed time
         t1 = time.time()
-        diff_time = t1 - t0
-        avg_time = diff_time/self.cfg.trainingRepeats
+        est_time = t1 - t0
+        avg_time = est_time/self.cfg.trainingRepeats
 
         ll_list = np.array(ll_list)
         r2_list = np.array(rho_sq)
         vtt_list = np.array(VTT_mid_list)
 
-        return ll_list, r2_list, vtt_list, diff_time, avg_time
+        return ll_list, r2_list, vtt_list, est_time, avg_time
 
     @staticmethod
     def simulateNChoice(self,clf,y,vtt_grid,X,R):
