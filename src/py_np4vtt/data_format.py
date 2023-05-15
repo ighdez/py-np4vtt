@@ -45,6 +45,7 @@ class ModelArrays:
 @dataclass
 class DescriptiveStatsBasic:
     NP: int  # Number of participants
+    N_BVTT: int # Number of unique BVTT points
     ChosenBVTT_Mean: float  # Mean chosen BVTT
     BVTT_min: float  # Minimum of BVTT
     BVTT_max: float  # Maximum of BVTT
@@ -55,6 +56,7 @@ class DescriptiveStatsBasic:
             No. individuals: {self.NP}
 
             BVTT statistics:
+            No. of unique BVTT points: {self.N_BVTT}
             Mean chosen BVTT: {self.ChosenBVTT_Mean}
             Minimum of BVTT: {self.BVTT_min}
             Maximum of BVTT: {self.BVTT_max}
@@ -66,6 +68,7 @@ class DescriptiveStatsBasic:
 class DescriptiveStatsPanel:
     NP: int  # Number of participants
     T: int  # Number of choice situations per participant
+    N_BVTT: int # Number of unique BVTT points
     NT_FastExp: int  # Number of non-traders (fast-expensive alt.)
     NT_CheapSlow: int  # Number of non-traders (cheap-slow alt.)
     ChosenBVTT_Mean: float  # Mean chosen BVTT
@@ -83,6 +86,7 @@ class DescriptiveStatsPanel:
             Slow-cheap alt.: {self.NT_CheapSlow}
 
             BVTT statistics:
+            No. of unique BVTT points: {self.N_BVTT}
             Mean chosen BVTT: {self.ChosenBVTT_Mean}
             Minimum of BVTT: {self.BVTT_min}
             Maximum of BVTT: {self.BVTT_max}

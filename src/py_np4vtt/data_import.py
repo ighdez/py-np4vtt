@@ -185,6 +185,7 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
     if arrs.is_balanced_panel:
         n = arrs.NP
         t = arrs.T
+        n_bvtt = len(np.unique(arrs.BVTT))
         chosen_fastexp = np.sum(fbe_units, 1)
         nt_cheapslow = np.count_nonzero(chosen_fastexp == 0)
         nt_fastext = np.count_nonzero(chosen_fastexp == arrs.T)
@@ -192,6 +193,7 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
         return DescriptiveStatsPanel(
         NP=n,
         T=t,
+        N_BVTT=n_bvtt,
         NT_FastExp=nt_fastext,
         NT_CheapSlow=nt_cheapslow,
         ChosenBVTT_Mean=np.round(chosenBVTT_mean,4),
@@ -200,9 +202,11 @@ def compute_descriptives(arrs: ModelArrays) -> DescriptiveStatsBasic:
         )
     else:
         n = arrs.NP * arrs.T
+        n_bvtt = len(np.unique(arrs.BVTT))
 
         return DescriptiveStatsBasic(
         NP=n,
+        N_BVTT=n_bvtt,
         ChosenBVTT_Mean=np.round(chosenBVTT_mean,4),
         BVTT_min=np.round(np.amin(arrs.BVTT),4),
         BVTT_max=np.round(np.amax(arrs.BVTT),4),
