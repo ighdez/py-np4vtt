@@ -138,11 +138,12 @@ class ModelRV:
         V2 = scale * VTT
 
         dV = V2 - V1
-        dV[dV>700] = 700
+        # dV[dV>700] = 700
 
         # Create choice probability and Log-likelihood
         p = 1 / (1 + np.exp(-dV))
-        ll = - np.sum(np.log(p * (y_regress == 1) + (1 - p) * (y_regress == 0)))
+        ll_n = (1-y_regress) * np.log(1-p) + y_regress*np.log(p)
+        ll = - np.sum(ll_n)
 
         # Return choice probability
         return ll

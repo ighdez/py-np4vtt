@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-np4vtt"
-version = "1.0.4"
+version = "1.0.5"
 description = "Python library providing NonParametric models for Value of Travel Time analysis"
 authors = ["José Ignacio Hernández <J.I.Hernandez@tudelft.nl>", "João Paulo Pizani Flor <paulopizani@posteo.net>"]
 
