@@ -175,10 +175,6 @@ class ModelRouwendal:
         t0 = time.time()
         results = _bfgsmin(ModelRouwendal.objectiveFunction, x0, args=argTuple,tol=1e-6,verbose=True)
 
-        # Compute elapsed time
-        t1 = time.time()
-        est_time = t1 - t0
-
         # Collect results
         x = results['x']
         hess = Hessian(ModelRouwendal.objectiveFunction,method='forward')(x,self.arrays.NP, self.arrays.T, BVTT_array, Choice_array, self.vtt_grid)
@@ -186,6 +182,10 @@ class ModelRouwendal:
         ll = -results['fun']
         exitflag = results['convergence']
 
+        # Compute elapsed time
+        t1 = time.time()
+        est_time = t1 - t0
+        
         # Get estimated probability of consistent choice
         q_prob = np.exp(x[0])/(1+np.exp(x[0]))
         q_est = x[0]

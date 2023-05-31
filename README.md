@@ -30,7 +30,7 @@ These examples guide the user through the process of loading a dataset, estimati
 
 **Take, for example, the VTT distribution from the Rouwendal model using NP4VTT:**
 
-![VTT distribution from the Rouwendal model using NP4VTT](https://gitlab.tudelft.nl/np4vtt/py-np4vtt/-/raw/master/examples/outcomes/rouwendal.png)
+![VTT distribution from the Rouwendal model using NP4VTT](examples/norway_data/outcomes/rouwendal.png)
 
 ## References
 
